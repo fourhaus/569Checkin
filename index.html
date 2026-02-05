@@ -81,7 +81,7 @@
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
         <script>
-  const map = L.map('map').setView([-33.8768, 151.2054], 17);
+  const map = L.map('map',{zoomControl: false}).setView([-33.8768, 151.2054], 17);
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
 	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -89,7 +89,9 @@
 	maxZoom: 20,
     attribution: '&copy; OpenStreetMap'
   }).addTo(map);
-
+    L.control.zoom({
+    position: 'bottomright' // <-- this moves zoom buttons
+    }).addTo(map);
   const sunTower = L.marker([-33.87732111531777, 151.20569434195536])
     .bindPopup(`Sun Tower Entrance <img src="Sun Tower.png" style="width:300px; border-radius:8px; margin-top:8px;"">`)
     .addTo(map);
@@ -129,7 +131,7 @@
         clearRoutes();
         route1.addTo(map);
         map.setView([-33.87715, 151.20525], 18);
-        sunTower.openPopup();
+        openPopupLower(sunTower);
       }
     },
     {
@@ -139,7 +141,7 @@
         clearRoutes();
         route1.addTo(map);
         map.setView([-33.87703, 151.20497], 18);
-        lockbox.openPopup();
+        openPopupLower(lockbox)
       }
     },
     {
@@ -163,12 +165,29 @@
         clearRoutes();
         route3.addTo(map);
         map.setView([-33.87670, 151.20580], 18);
-        property.openPopup();
+        openPopupLower(property);
       }
     }
   ];
 
+function openPopupLower(marker, zoom = 18, offsetY = 100) {
+  // Get marker position
+  const latlng = marker.getLatLng();
+
+  // Convert offset in pixels to LatLng
+  const point = map.latLngToContainerPoint(latlng);       // marker → screen pixels
+  const newPoint = L.point(point.x, point.y - offsetY);  // move upward in pixels
+  const newLatLng = map.containerPointToLatLng(newPoint); // convert back to LatLng
+
+  // Fly to new LatLng
+  map.flyTo(newLatLng, zoom);
+
+  // Open popup
+  marker.openPopup();
+}
+
   let currentStep = 0;
+
 
   function renderStep() {
     const step = steps[currentStep];
