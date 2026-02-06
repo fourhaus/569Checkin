@@ -1,281 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="robots" content="noindex, nofollow">
-  <title>Check-in Instructions</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="robots" content="noindex, nofollow">
+        <title>Check-in Instructions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <style>
+body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+#map { height: 100vh; width: 100vw; }
+#content { display:none; padding:16px; }
+/* --- Dropdown Bar --- */
+.topic-dropdown {
+  position: sticky;
+  top: 0;
+  background: #f9f9f9;
+  padding: 10px 16px;
+  z-index: 2000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  display: flex;
+  justify-content: center;
+}
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+.topic-dropdown select {
+  padding: 8px 12px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  cursor: pointer;
+  background: #ffffff;
+  transition: all 0.2s;
+}
 
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
+.topic-dropdown select:hover {
+  border-color: #2563eb;
+}
 
-    #map {
-      height: 100vh;
-      width: 100vw;
-    }
+.topic-dropdown select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 5px rgba(37,99,235,0.5);
+}
 
-    .popup-scroll {
-      max-height: 380px;
-      overflow-y: auto;
-    }
+.step-content {
+  display: flex;
+  flex-direction: column;   /* stack text above image */
+  align-items: center;      /* center horizontally */
+}
 
-    .icon-marker {
-      background: none;
-      border: none;
-    }
+.step-content img {
+  max-width: 100%;          /* responsive width */
+  width: 400px;             /* default width */
+  border-radius: 8px;
+  margin-top: 16px;
+}
 
-    .icon-wrapper {
-      width: 25px;
-      height: 25px;
-      background: white;
-      border: 3px solid #020202;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
+/* --- Step Bar --- */
+.instruction-bar {
+    position: sticky;
+    top: 70px; /* height of dropdown */
+    margin: 0 auto;
+    width: calc(100% - 20px);
+    max-width: 520px;
+    background: white;
+    z-index: 1000;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.popup-scroll { max-height:380px; overflow-y:auto; }
+.icon-marker { background:none; border:none; }
+.icon-wrapper { width:25px;height:25px;background:white;border:3px solid #020202;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,0.3);}
+.icon-wrapper img{width:18px;height:18px;object-fit:contain;}
+.nav-btn { background:#2563eb;color:white;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;}
+.nav-btn:disabled { background:#cbd5f5; }
+.step-text { flex:1; font-size:14px;}
+.step-text strong { display:block; font-size:15px;}
+.topic-dropdown { position:sticky; top:0; background:white; padding:8px 16px; z-index:2000; box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+.topic-dropdown select { padding:6px 10px; font-size:14px; border-radius:6px; border:1px solid #ccc;}
+</style>
+    </head>
+    <body>
 
-    .icon-wrapper img {
-      width: 18px;
-      height: 18px;
-      object-fit: contain;
-    }
+        <!-- Topic Selector -->
+        <div class="topic-dropdown">
+            <select id="topicSelect" onchange="jumpToTopic()">
+                <option value="0">Lockbox Instructions</option>
+                <option value="3">Parking Instructions</option>
+                <option value="1">Building & Apartment Entry</option>
+                <option value="2">Amenities Guide</option>
+            </select>
+        </div>
 
-    .instruction-bar {
-      position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 20px);
-      max-width: 520px;
-      background: white;
-      z-index: 1000;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+        <!-- Step Navigation Bar -->
+        <div class="instruction-bar">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()">‹</button>
+            <div class="step-text" id="stepText"></div>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">›</button>
+        </div>
 
-    .nav-btn {
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      font-size: 18px;
-      cursor: pointer;
-    }
+        <!-- Map for topics that need it -->
+        <div id="map"></div>
 
-    .nav-btn:disabled {
-      background: #cbd5f5;
-    }
+        <!-- Content div for topics without map -->
+        <div id="content"></div>
 
-    .step-text {
-      flex: 1;
-      font-size: 14px;
-    }
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
 
-    .step-text strong {
-      display: block;
-      font-size: 15px;
-    }
-  </style>
-</head>
-
-<body>
-
-<div class="instruction-bar">
-  <button class="nav-btn" id="prevBtn" onclick="prevStep()">‹</button>
-  <div class="step-text" id="stepText"></div>
-  <button class="nav-btn" id="nextBtn" onclick="nextStep()">›</button>
-</div>
-
-<div id="map"></div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
+// --- Initialize Map ---
 const map = L.map('map',{ zoomControl:false }).setView([-33.8768, 151.2054], 17);
-
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  subdomains: 'abcd',
-  maxZoom: 20
-}).addTo(map);
-
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {subdomains:'abcd', maxZoom:20}).addTo(map);
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-// MARKERS
-const sunTower = L.marker([-33.87729669864325, 151.2058196775788])
-  .bindPopup(`<strong>Sun Tower Entrance located on 591 George St</strong><br>
-    <img src="Sun Tower.png" style="width:300px;border-radius:8px;margin-top:8px;">`)
-  .addTo(map);
+// --- Map Markers (Lockbox Topic) ---
+const sunTower = L.marker([-33.87729669864325, 151.2058196775788]).bindPopup(`<strong>Sun Tower Entrance</strong><br><img src="Sun Tower.png" style="width:300px;border-radius:8px;margin-top:8px;">`).addTo(map);
+const lockboxIcon = L.divIcon({className:'icon-marker',html:`<div class="icon-wrapper"><img src="lockbox.png"></div>`, iconAnchor:[10,17]});
+const lockbox = L.marker([-33.87703364976371,151.20497041045243],{icon:lockboxIcon}).bindPopup(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`,{maxHeight:300,minWidth:330}).addTo(map);
+const apartmentIcon = L.divIcon({className:'icon-marker',html:`<div class="icon-wrapper"><img src="apartment.png"></div>`,iconAnchor:[10,17]});
+const property = L.marker([-33.87682707734486,151.2060015701829],{icon:apartmentIcon}).bindPopup(`<strong>Four Haus Residence</strong><br><img src="apartmentImage.jpg" style="width:300px;border-radius:8px;margin-top:8px;">`).addTo(map);
+const corridorPopup = L.popup({ maxHeight: 300, minWidth:330 }).setContent(`<div class="popup-scroll"><strong>Mall Corridor</strong><br>Walk through the mall corridor<br><img src="corridor.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`);
 
-const lockboxIcon = L.divIcon({
-  className: 'icon-marker',
-  html: `<div class="icon-wrapper"><img src="lockbox.png"></div>`,
-  iconAnchor: [10, 17],
-});
-
-const lockbox = L.marker(
-  [-33.87703364976371, 151.20497041045243],
-  { icon: lockboxIcon }
-).bindPopup(`
-  <div class="popup-scroll">
-    <strong>Lockbox – Located on Eagar Street</strong><br>
-    <img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;">
-  </div>
-`, {
-  maxHeight: 300,
-  minWidth: 330
-}).addTo(map);
-
-const apartmentIcon = L.divIcon({
-  className: 'icon-marker',
-  html: `<div class="icon-wrapper"><img src="apartment.png"></div>`,
-  iconAnchor: [10, 17],
-});
-
-const property = L.marker(
-  [-33.87682707734486, 151.2060015701829],
-  { icon: apartmentIcon }
-).bindPopup(`
-  <strong>Four Haus Residence</strong><br>
-  <img src="apartmentImage.png" style="width:300px;border-radius:8px;margin-top:8px;">
-`).addTo(map);
-
-// POPUP ONLY (NO MARKER)
-const corridorPopup = L.popup({ maxHeight: 300, minWidth:330 })
-  .setContent(`
-  <div class="popup-scroll">
-    <strong>Mall Corridor</strong><br>
-    Walk through the mall corridor<br>
-    <img src="corridor.gif" style="width:300px;border-radius:8px;margin-top:8px;">
-  </div>
-`);
-
-// ROUTES
-const route0 = L.polyline([
-  [-33.87729669864325, 151.2058196775788],
-  [-33.87717127441062, 151.205361210565]
-], { color:'#0ea5e9', weight:5 });
-
-const route1 = L.polyline([
-  [-33.87729669864325, 151.2058196775788],
-  [-33.87703364976371, 151.20497041045243]
-], { color:'#2563eb', weight:5 });
-
-const route2 = L.polyline([
-  [-33.87703364976371, 151.20497041045243],
-  [-33.87729669864325, 151.2058196775788]
-], { color:'#9333ea', weight:5 });
-
-const route3 = L.polyline([
-  [-33.87729669864325, 151.2058196775788],
-  [-33.87682707734486, 151.2060015701829]
-], { color:'#16a34a', weight:5 });
-
-// Track active route to prevent flash
+// Routes
+const route0 = L.polyline([[-33.87729669864325,151.2058196775788],[-33.87717127441062,151.205361210565]],{color:'#0ea5e9',weight:5});
+const route1 = L.polyline([[-33.87729669864325,151.2058196775788],[-33.87703364976371,151.20497041045243]],{color:'#2563eb',weight:5});
+const route2 = L.polyline([[-33.87703364976371,151.20497041045243],[-33.87729669864325,151.2058196775788]],{color:'#9333ea',weight:5});
+const route3 = L.polyline([[-33.87729669864325,151.2058196775788],[-33.87682707734486,151.2060015701829]],{color:'#16a34a',weight:5});
 let activeRoute = null;
+function updateRoute(route){ if(activeRoute && map.hasLayer(activeRoute)){ map.removeLayer(activeRoute); } activeRoute = route; activeRoute.addTo(map); }
+function openPopupLower(marker, zoom=18, offsetY=120){ const point=map.latLngToContainerPoint(marker.getLatLng()); const newPoint=L.point(point.x,point.y-offsetY); map.flyTo(map.containerPointToLatLng(newPoint), zoom); marker.openPopup(); }
 
-// STEPS
-const steps = [
-  {
-    title: "Step 1 – Approach Sun Tower",
-    text: "Walk through the mall towards the back.",
-    action: () => {
-      updateRoute(route0);
-      openPopupLower(sunTower);
-    }
-  },
-  {
-    title: "Step 2 – Walk through the mall corridor",
-    text: "Continue walking through the mall corridor.",
-    action: () => {
-      updateRoute(route0);
-      corridorPopup
-        .setLatLng([-33.87717127441062, 151.205361210565])
-        .openOn(map);
-    }
-  },
-  {
-    title: "Step 3 – Collect keys",
-    text: "1) Find lockbox labelled 4H on Eagar Street. <br> 2) Unlock the lockbox with the code provided in your message.<br> 3) Remove everything in the lockbox",
-    action: () => {
-      updateRoute(route1);
-      openPopupLower(lockbox);
-      lockbox.getPopup().setContent(`
-        <div class="popup-scroll">
-            <strong>Lockbox – Located on Eagar Street</strong><br>
-            <img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;">
-        </div>    `);
-    }
-  },
-  {
-    title: "Step 4 – Return to George Street",
-    text: "Walk back the same way you came from.",
-    action: () => {
-      updateRoute(route2);
-      lockbox.getPopup().setContent(`
-      <div class="popup-scroll">
-        <strong>Lockbox – Located on Eagar Street</strong><br>
-        <img src="BackToGeorge.png" style="width:300px;border-radius:8px;margin-top:8px;">
+// --- Steps for All Topics ---
+const allSteps = [
+  // --- Topic 0: Lockbox Instructions (Map-based) ---
+  [
+    {title:"Step 1 – Approach Sun Tower", text:"Walk through the mall towards the back.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route0); openPopupLower(sunTower); }},
+    {title:"Step 2 – Walk through mall corridor", text:"Continue walking through the mall corridor.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route0); corridorPopup.setLatLng([-33.87717127441062,151.205361210565]).openOn(map); }},
+    {title:"Step 3 – Collect keys on Eagar St", text:"1) The lockbox labelled 4H is located on the first window. <br> 2) Use the code given to unlock. <br> 3) You should take two cards and 2 set of keys and inside the lockbox.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route1); openPopupLower(lockbox); }},
+    {title:"Step 4 – Return to George Street", text:"Walk back the same way you came.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route2); lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="BackToGeorge.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`); }},
+    {title:"Step 5 – Welcome to apartment", text:"Walk to apartment address.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route3); openPopupLower(property); }}
+  ],
+
+  // --- Topic 1: Building & Apartment Entry ---
+  [
+    {
+        title: "Step 1 – Building Entry",
+        text: "Scan the key card against the reader until you hear a beep. The glass door should open.",
+        action: () => {
+            document.getElementById("map").style.display = "none";
+            document.getElementById("content").style.display = "block";
+            document.getElementById("content").innerHTML = `
+            <div class="step-content">
+                <img src='cardReader.jpg'>
+            </div>
+            `;
+        }
+    },
+  {title:"Step 2 – Lift lobby", text:"Walk all the way into the lift lobby. You are on <b>LEVEL 25</b>, only use the lifts on the left", action:()=>{ document.getElementById("map").style.display="none"; document.getElementById("content").style.display="block"; document.getElementById("content").innerHTML = `
+      <div class="step-content">
+        <img src='lobby.gif'>
       </div>
-    `);
+    `; }},
+    {
+        title: "Step 3 – Enter the lift",
+        text: "Scan the key card on the reader and press level 25 ",
+        action: () => {
+            document.getElementById("map").style.display = "none";
+            document.getElementById("content").style.display = "block";
+            document.getElementById("content").innerHTML = `
+            <div class="step-content">
+                <img src='lift.jpg'>
+            </div>
+            `;
+        }
+    },
+    {
+        title: "Step 4 – Turn right after exiting the lift ",
+        text: "After exiting the lift, turn right into the corridor. <br> The apartment is located at the end of the corridor.",
+        action: () => {
+            document.getElementById("map").style.display = "none";
+            document.getElementById("content").style.display = "block";
+            document.getElementById("content").innerHTML = `
+            <div class="step-content">
+                <img src='level25.gif'>
+            </div>
+            `;
+        }
+    },
+    {
+        title: "Step 5: Welcome  ",
+        text: "Insert the GREEN key into the top keyhole. <br> Turn the key clockwise. <br> Pull the door handle and push the door open at the same time.",
+        action: () => {
+            document.getElementById("map").style.display = "none";
+            document.getElementById("content").style.display = "block";
+            document.getElementById("content").innerHTML = `
+            <div class="step-content">
+                <img src='door.jpg'>
+            </div>
+            `;
+        }
     }
-  },
-  {
-    title: "Step 5 – Welcome to apartment",
-    text: "Walk to The apartment address specified in your message",
-    action: () => {
-      updateRoute(route3);
-      openPopupLower(property);
-    }
-  }
+  ],
+
+  // --- Topic 2: Amenities Guide ---
+  [
+    {title:"Step 1 – Lobby & Elevators", text:"Instructions placeholder", action:()=>{ document.getElementById("map").style.display="none"; document.getElementById("content").style.display="block"; document.getElementById("content").innerHTML="<h2>Lobby & Elevators</h2><p>Step 1 instructions go here.</p>"; }},
+    {title:"Step 2 – Gym & Facilities", text:"Instructions placeholder", action:()=>{ document.getElementById("map").style.display="none"; document.getElementById("content").style.display="block"; document.getElementById("content").innerHTML="<h2>Gym & Facilities</h2><p>Step 2 instructions go here.</p>"; }}
+  ],
+
+  // --- Topic 3: Return / Exiting ---
+  [
+    {title:"Step 1 – Exit", text:"Instructions placeholder", action:()=>{ document.getElementById("map").style.display="none"; document.getElementById("content").style.display="block"; document.getElementById("content").innerHTML="<h2>Exit</h2><p>Step 1 instructions go here.</p>"; }}
+  ]
 ];
 
-// Function to smoothly switch route without flash
-function updateRoute(route) {
-  if (activeRoute && map.hasLayer(activeRoute)) {
-    map.removeLayer(activeRoute);
-  }
-  activeRoute = route;
-  activeRoute.addTo(map);
-}
-
-// Fly to marker and open popup
-function openPopupLower(marker, zoom = 18, offsetY = 120) {
-  const point = map.latLngToContainerPoint(marker.getLatLng());
-  const newPoint = L.point(point.x, point.y - offsetY);
-  map.flyTo(map.containerPointToLatLng(newPoint), zoom);
-  marker.openPopup();
-}
-
-// Navigation buttons
+// Current topic and step
+let currentTopic = 0;
 let currentStep = 0;
 
-function renderStep() {
-  const step = steps[currentStep];
-  step.action();
-  document.getElementById("stepText").innerHTML =
-    `<strong>${step.title}</strong>${step.text}`;
-  prevBtn.disabled = currentStep === 0;
-  nextBtn.disabled = currentStep === steps.length - 1;
+function renderStep(){ 
+  allSteps[currentTopic][currentStep].action();
+  document.getElementById("stepText").innerHTML=`<strong>${allSteps[currentTopic][currentStep].title}</strong><br>${allSteps[currentTopic][currentStep].text}`;
+  prevBtn.disabled=currentStep===0;
+  nextBtn.disabled=currentStep===allSteps[currentTopic].length-1;
 }
 
-function nextStep(){ if(currentStep < steps.length-1){ currentStep++; renderStep(); }}
-function prevStep(){ if(currentStep > 0){ currentStep--; renderStep(); }}
+function nextStep(){ if(currentStep<allSteps[currentTopic].length-1){ currentStep++; renderStep(); }}
+function prevStep(){ if(currentStep>0){ currentStep--; renderStep(); }}
+function jumpToTopic(){ 
+  currentTopic=parseInt(document.getElementById("topicSelect").value); 
+  currentStep=0; 
+  renderStep();
+}
 
 renderStep();
-</script>
 
-</body>
+</script>
+    </body>
 </html>
