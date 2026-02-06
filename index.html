@@ -212,6 +212,11 @@ const steps = [
     action: () => {
       updateRoute(route1);
       openPopupLower(lockbox);
+      lockbox.getPopup().setContent(`
+        <div class="popup-scroll">
+            <strong>Lockbox – Located on Eagar Street</strong><br>
+            <img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;">
+        </div>    `);
     }
   },
   {
@@ -222,7 +227,7 @@ const steps = [
       lockbox.getPopup().setContent(`
       <div class="popup-scroll">
         <strong>Lockbox – Located on Eagar Street</strong><br>
-        <img src="BackToGeorge.jpg" style="width:300px;border-radius:8px;margin-top:8px;">
+        <img src="BackToGeorge.png" style="width:300px;border-radius:8px;margin-top:8px;">
       </div>
     `);
     }
