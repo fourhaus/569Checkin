@@ -190,7 +190,7 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
     </div>
     <div id="imgModal">
       <span class="closeModal">&times;</span>
-      <img id="modalImg" src=""/>
+      <img id="modalImg" src />
     </div>
     <!-- Topic Selector -->
     <div class="app-bar">
@@ -199,6 +199,8 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
         <button onclick="goToTopic(3)" id="tab-3">Parking</button>
         <button onclick="goToTopic(1)" id="tab-1">Building Entry</button>
         <button onclick="goToTopic(2)" id="tab-2">Amenities</button>
+        <button onclick="showGeneralInfo()" id="tab-4">General Info</button>
+
       </div>
     </div>
 
@@ -353,6 +355,8 @@ const allSteps = [
     action: () => {
       document.getElementById("map").style.display = "block";
       document.getElementById("content").style.display = "none";
+      document.querySelector(".instruction-bar").style.display = "flex";
+
       showLockboxLayers();
       hideParkingLayers();
       updateRoute(route0);
@@ -431,6 +435,8 @@ const allSteps = [
         action: () => {
             document.getElementById("map").style.display = "none";
             document.getElementById("content").style.display = "block";
+            document.querySelector(".instruction-bar").style.display = "flex";
+
             document.getElementById("content").innerHTML = `
             <div class="step-content">
                 <img src='cardReader.JPG'>
@@ -496,6 +502,8 @@ const allSteps = [
     action: () => {
       document.getElementById("map").style.display = "none";
       document.getElementById("content").style.display = "block";
+      document.querySelector(".instruction-bar").style.display = "flex";
+
       document.getElementById("content").innerHTML = `
             <div class="step-content">
                 <img src='swimming.jpeg'>
@@ -538,6 +546,7 @@ const allSteps = [
     action: () => {
       document.getElementById("map").style.display = "block";
       document.getElementById("content").style.display = "none";
+      document.querySelector(".instruction-bar").style.display = "flex";
 
       // Remove all markers & routes
       hideLockboxLayers();
@@ -599,6 +608,37 @@ const allSteps = [
     }}
 ]
 ];
+function showGeneralInfo() {
+  currentTopic = 4; // update current topic for active tab highlighting
+  currentStep = 0;  // reset step index just in case
+  document.getElementById("map").style.display = "none";
+  document.getElementById("content").style.display = "block";
+  document.querySelector(".instruction-bar").style.display = "none";
+
+  document.getElementById("content").innerHTML = `
+   <div class="step-content" style="padding:16px; max-width:600px; margin:auto;">
+  <h2>General Information</h2>
+
+  <p><strong>Building Address:</strong> Unit 325, Level 25, 569 George Street, Sydney NSW 2000</p>
+  <p><strong>Check-in Time:</strong> 3:00 PM onwards</p>
+  <p><strong>Check-out Time:</strong> 10:00 AM</p>
+  <p><strong>Wi-Fi Network:</strong> FourHaus_5G</p>
+  <p><strong>Wi-Fi Password:</strong> Stay@Fourhaus!</p>
+  <p><strong>Amenities:</strong> Located on Level P1</p>
+  <p><strong>Parking:</strong> Located on Level 2</p>
+
+  <h2>House Rules</h2>
+  <ul>
+    <li>This is a non-smoking apartment.</li>
+    <li>Please keep the access cards and remote safe and respect building rules.</li>
+    <li>Please keep the volume down after 10:00 PM.</li>
+    <li>A fee of <strong>$200</strong> will be charged for the replacement of each access card and remote.</li>
+  </ul>
+</div>  
+  `;
+
+  updateActiveTab();
+}
 
 // Current topic and step
 let currentTopic = 0;
