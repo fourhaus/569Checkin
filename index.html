@@ -280,7 +280,7 @@ function hideParkingLayers() {
 }
 let activeRoute = null;
 function updateRoute(route){ if(activeRoute && map.hasLayer(activeRoute)){ map.removeLayer(activeRoute); } activeRoute = route; activeRoute.addTo(map); }
-function openPopupLower(marker, zoom=18, offsetY=120){ const point=map.latLngToContainerPoint(marker.getLatLng()); const newPoint=L.point(point.x,point.y-offsetY); map.flyTo(map.containerPointToLatLng(newPoint), zoom); marker.openPopup(); }
+function openPopupLower(marker, zoom=18, offsetY=60){ const point=map.latLngToContainerPoint(marker.getLatLng()); const newPoint=L.point(point.x,point.y-offsetY); map.flyTo(map.containerPointToLatLng(newPoint), zoom); marker.openPopup(); }
 
 // --- Steps for All Topics ---
 const allSteps = [
