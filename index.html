@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="robots" content="noindex, nofollow">
-        <title>Check-in Instructions</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet"
-            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-        <style>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow">
+    <title>Check-in Instructions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
 body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
 #map { height: 100vh; width: 100vw; }
 #content { display:none; padding:16px; }
 /* --- Dropdown Bar --- */
+
 .topic-dropdown {
   position: sticky;
   top: 0;
@@ -32,6 +33,23 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
   cursor: pointer;
   background: #ffffff;
   transition: all 0.2s;
+}
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 3000;
+  background: white;
+  padding: 10px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.logo {
+  height: 32px;
+  max-width: 160px;
+  object-fit: contain;
 }
 
 .topic-dropdown select:hover {
@@ -55,22 +73,59 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
   border-radius: 8px;
   margin-top: 16px;
 }
+.app-bar {
+  position: sticky;
+  top: 56px; /* logo height */
+  z-index: 2500;
+  background: white;
+  padding: 8px 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.app-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.app-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.app-tabs button {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: #f1f5f9;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.app-tabs button.active {
+  background: #2563eb;
+  color: white;
+}
 
 /* --- Step Bar --- */
+
 .instruction-bar {
-    position: sticky;
-    top: 70px; /* height of dropdown */
-    margin: 0 auto;
-    width: calc(100% - 20px);
-    max-width: 520px;
-    background: white;
-    z-index: 1000;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  position: sticky;
+  top: 110px; /* header + dropdown */
+  margin: 12px auto;
+  width: calc(100% - 24px);
+  max-width: 520px;
+  background: white;
+  z-index: 1000;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 .popup-scroll { max-height:380px; overflow-y:auto; }
 .icon-marker { background:none; border:none; }
@@ -83,34 +138,37 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
 .topic-dropdown { position:sticky; top:0; background:white; padding:8px 16px; z-index:2000; box-shadow:0 2px 6px rgba(0,0,0,0.15);}
 .topic-dropdown select { padding:6px 10px; font-size:14px; border-radius:6px; border:1px solid #ccc;}
 </style>
-    </head>
-    <body>
+  </head>
+  <body>
+    <div class="app-header">
+      <img src="FourHaus.png" alt="Company Logo" class="logo">
+    </div>
 
-        <!-- Topic Selector -->
-        <div class="topic-dropdown">
-            <select id="topicSelect" onchange="jumpToTopic()">
-                <option value="0">Lockbox Instructions</option>
-                <option value="3">Parking Instructions</option>
-                <option value="1">Building & Apartment Entry</option>
-                <option value="2">Amenities Guide</option>
-            </select>
-        </div>
+    <!-- Topic Selector -->
+    <div class="app-bar">
+      <div class="app-tabs">
+        <button onclick="goToTopic(0)" id="tab-0">Lockbox</button>
+        <button onclick="goToTopic(3)" id="tab-3">Parking</button>
+        <button onclick="goToTopic(1)" id="tab-1">Building Entry</button>
+        <button onclick="goToTopic(2)" id="tab-2">Amenities</button>
+      </div>
+    </div>
 
-        <!-- Step Navigation Bar -->
-        <div class="instruction-bar">
-            <button class="nav-btn" id="prevBtn" onclick="prevStep()">‹</button>
-            <div class="step-text" id="stepText"></div>
-            <button class="nav-btn" id="nextBtn" onclick="nextStep()">›</button>
-        </div>
+    <!-- Step Navigation Bar -->
+    <div class="instruction-bar">
+      <button class="nav-btn" id="prevBtn" onclick="prevStep()">‹</button>
+      <div class="step-text" id="stepText"></div>
+      <button class="nav-btn" id="nextBtn" onclick="nextStep()">›</button>
+    </div>
 
-        <!-- Map for topics that need it -->
-        <div id="map"></div>
+    <!-- Map for topics that need it -->
+    <div id="map"></div>
 
-        <!-- Content div for topics without map -->
-        <div id="content"></div>
+    <!-- Content div for topics without map -->
+    <div id="content"></div>
 
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        <script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
 
 // --- Initialize Map ---
 const map = L.map('map',{ zoomControl:false }).setView([-33.8768, 151.2054], 17);
@@ -180,6 +238,16 @@ const parkingMarker = L.marker(
   </div>
 `);
 
+const douglasStEntrance = L.marker(
+  [-33.87621216888041, 151.20499227269897],
+).bindPopup(`
+  <div class="popup-scroll">
+    <strong>Turn left on Liverpool St onto Douglas Street</strong><br>
+    <img src="liverpoolSt.png"
+         style="width:300px;border-radius:8px;margin-top:8px;">
+  </div>
+`);
+
 const parkingRoute = L.polyline([
   [-33.87621216888041, 151.20499227269897], // parking entrance
   [-33.87621942917767, 151.20487203199662],
@@ -196,7 +264,7 @@ const parkingToEagar = L.polyline([
 // --- Parking Layers Array ---
 const parkingLayers = [
   parkingMarker,lockboxParking,
-  parkingRoute,parkingToEagar
+  parkingRoute,parkingToEagar,douglasStEntrance
 ];
 
 function showParkingLayers() {
@@ -218,14 +286,82 @@ function openPopupLower(marker, zoom=18, offsetY=120){ const point=map.latLngToC
 const allSteps = [
   // --- Topic 0: Lockbox Instructions (Map-based) ---
   [
-    {title:"Step 1 – Approach Sun Tower at 591 George Street", text:"Enter the mall, walk past Sun Coffee, and continue straight towards the back.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; showLockboxLayers(); updateRoute(route0); openPopupLower(sunTower); }},
-    {title:"Step 2 – Walk through mall corridor", text:"Keep walking straight through the mall corridor until you reach a glass door labelled “Public Access to Eagar Street.”", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route0); corridorPopup.setLatLng([-33.87717127441062,151.205361210565]).openOn(map); }},
-    {title:"Step 3 – Walk towards Eagar St", text:"1) Exit the mall and walk past Carsia Gardens towards Eagar Street, then turn right. <br>2) The lockbox is located on the first window grille on Eagar Street. <br> 3) Look for the lockbox labelled 4H.", action:()=>{ lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`);document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route1); openPopupLower(lockbox); }},
-    {title:"Step 4 – Collect the keys and key card", text:"1) Retrieve the keys from the lockbox labelled 4H using the code provided. <br> 2) You should see 2 sets of keys and keycards. <b> Please do not take the remote if you do not intend to drive during your stay </b><br> 3) After closing the lockbox, scramble the numbers.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route2); lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox <img src="lockboxLocation.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`); }},
-    {title:"Step 5 – Return to George Street", text:"Walk back the same way you came.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route2); lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="BackToGeorge.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`); }},
-    {title:"Step 6 – Welcome to your home away from home", text:"After exiting Sun Tower, turn left and walk up the George street towards 569 George St, just a few shops away. <br> <a href='#' onclick='goToTopic(1)'> Click you for Apartment entry instructions </a>", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route3); openPopupLower(property); }}
-  ],
+  {
+    title: "Step 1 – Approach Sun Tower at 591 George Street",
+    text: "Enter the mall, walk past Sun Coffee, and continue straight towards the back.",
+    action: () => {
+      document.getElementById("map").style.display = "block";
+      document.getElementById("content").style.display = "none";
+      showLockboxLayers();
+      hideParkingLayers();
+      updateRoute(route0);
+      openPopupLower(sunTower);
+      sunTower.getPopup().setContent(`<strong>Sun Tower Entrance</strong><br><img src="Sun Tower.png" style="width:300px;border-radius:8px;margin-top:8px;">`)
+    }
+  },
+  {
+    title: "Step 2 – Walk through mall corridor",
+    text: "Keep walking straight through the mall corridor until you reach a glass door labelled “Public Access to Eagar Street.”",
+    action: () => {
+      document.getElementById("map").style.display = "block";
+      document.getElementById("content").style.display = "none";
+      updateRoute(route0);
+      corridorPopup
+        .setLatLng([-33.87717127441062,151.205361210565])
+        .setContent(`<div class="popup-scroll"><strong>Mall Corridor</strong><br>Walk through the mall corridor<br><img src="corridor.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
+        .openOn(map);
+            openPopupLower(corridorPopup);
 
+    }
+  },
+  {
+    title: "Step 3 – Walk towards Eagar St",
+    text: "1) Exit the mall and walk past Carsia Gardens towards Eagar Street, then turn right. <br>2) The lockbox is located on the first window grille on Eagar Street. <br> 3) Look for the lockbox labelled 4H.",
+    action: () => {
+      lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`);
+      document.getElementById("map").style.display = "block";
+      document.getElementById("content").style.display = "none";
+      updateRoute(route1);
+      openPopupLower(lockbox);
+    }
+  },
+  {
+    title: "Step 4 – Collect the keys and key card",
+    text: "1) Retrieve the keys from the lockbox labelled 4H using the code provided. <br> 2) You should see 2 sets of keys and keycards. <b> Please do not take the remote if you do not intend to drive during your stay </b><br> 3) After closing the lockbox, scramble the numbers.",
+    action: () => {
+      document.getElementById("map").style.display = "block";
+      document.getElementById("content").style.display = "none";
+      updateRoute(route2);
+      lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox <img src="lockboxLocation.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`);
+      openPopupLower(lockbox)
+
+      }
+  },
+  {
+    title: "Step 5 – Return to George Street",
+    text: "Walk back the same way you came.",
+    action: () => {
+      document.getElementById("map").style.display = "block";
+      document.getElementById("content").style.display = "none";
+      updateRoute(route2);
+      sunTower.getPopup()
+        .setContent(`<div class="popup-scroll"><strong>Return to George Street</strong><br><img src="BackToGeorge.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
+        .openOn(map);
+      openPopupLower(sunTower)
+    }
+  },
+  {
+    title: "Step 6 – Welcome to your home away from home",
+    text: "After exiting Sun Tower, turn left and walk up the George street towards 569 George St, just a few shops away. <br> <a href='#' onclick='goToTopic(1)'> Click you for Apartment entry instructions </a>",
+    action: () => {
+      document.getElementById("map").style.display = "block";
+      document.getElementById("content").style.display = "none";
+      updateRoute(route3);
+      openPopupLower(property);
+    }
+  }
+]
+,
   // --- Topic 1: Building & Apartment Entry ---
   [
     {
@@ -297,7 +433,7 @@ const allSteps = [
   [
   {
     title: "Step 1 – Parking is located on Douglas St",
-    text: "On Liverpool St, turn left onto Douglas St. <br> It is a very small alley way, please take note of oncoming vehicles and pedestrians",
+    text: "On Liverpool Street, turn left onto Douglas Street. <br> Please note this is a small alleyway and can be easily missed. Please also take extra care for oncoming vehicles and pedestrians.",
     action: () => {
       document.getElementById("map").style.display = "block";
       document.getElementById("content").style.display = "none";
@@ -305,17 +441,18 @@ const allSteps = [
       // Remove all markers & routes
       hideLockboxLayers();
       showParkingLayers();
+      openPopupLower(douglasStEntrance)
 
       // Optional: reset map view for parking
-      map.flyTo([-33.8768, 151.2054], 20);
+      map.flyTo([-33.87621216888041, 151.20499227269897],18);
     }
     
   },{
     title: "Step 2: Pick up the keys from Eagar Street",
     text: "1) Head to the leftmost window on Eagar Street and locate the lockbox marked “4H.” <br>2) Unlock the lockbox to access the keys, keycards, and remote with the lockcode provided <br>3) Lock the lockbox again by scrambling the numbers.",
     action: () => {
-      lockboxParking.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox <img src="lockboxLocation.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
-      map.flyTo([-33.87703364976371,151.20497041045243], 20);
+      lockboxParking.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox <img src="eagar4.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
+      map.flyTo([-33.87703364976371,151.20497041045243], 18);
           openPopupLower(lockboxParking)
 
     }
@@ -325,27 +462,27 @@ const allSteps = [
     title: "Step 3: Unlock the garage door",
     text: "Unlock the garage door by pressing 1 on the remote.",
     action: () => {
-      parkingMarker.getPopup().setContent(`<div class="popup-scroll"><img src=".jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
-      map.flyTo([-33.87703364976371,151.20497041045243], 20);
+      parkingMarker.getPopup().setContent(`<div class="popup-scroll">Unlock the garage gate with the remote<img src="remote.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
+      map.flyTo([-33.87703364976371,151.20497041045243], 18);
           openPopupLower(parkingMarker)
 
     }}
     ,
     {
     title: "Step 4: Enter the garage and turn left",
-    text: "Car space is located on level 2. <br> Turn left after entering the gate and turn right UP the ramp <br> Keep going up until you see level 2",
+    text: "1) Car space is located on level 2. <br> 2) Turn left after entering the gate and turn right UP the ramp <br> 3) Keep going up until you see level 2 <br> 4) The car space is on the left on Level 2, before the ramp goes up again. ",
     action: () => {
       parkingMarker.getPopup().setContent(`<div class="popup-scroll"> <img src="garageInstruction.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
-      map.flyTo([-33.87703364976371,151.20497041045243], 20);
+      map.flyTo([-33.87703364976371,151.20497041045243], 18);
           openPopupLower(parkingMarker)
 
     }},
     {
     title: "Step 5: Park in desginated car spot You are on LEVEL 2",
-    text: "Please park in the car spot marked 325. This space can fit two cars, but kindly use only one bay <br> The lifts are located beside the car spots. Only take the lifts that goes to Level 25",
+    text: "Please park in the car space marked 325. This space can accommodate two cars; however, please use only one bay. <br>The lifts are located beside the car spaces. Please take only the lifts that go to Level 25.",
     action: () => {
       parkingMarker.getPopup().setContent(`<div class="popup-scroll"> <img src="carspot.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
-      map.flyTo([-33.87703364976371,151.20497041045243], 20);
+      map.flyTo([-33.87703364976371,151.20497041045243], 18);
           openPopupLower(parkingMarker)
 
     }}
@@ -356,11 +493,20 @@ const allSteps = [
 let currentTopic = 0;
 let currentStep = 0;
 
+function updateActiveTab() {
+  document.querySelectorAll(".app-tabs button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  const active = document.getElementById(`tab-${currentTopic}`);
+  if (active) active.classList.add("active");
+}
 function renderStep(){ 
   allSteps[currentTopic][currentStep].action();
-  document.getElementById("stepText").innerHTML=`<strong>${allSteps[currentTopic][currentStep].title}</strong><br>${allSteps[currentTopic][currentStep].text}`;
-  prevBtn.disabled=currentStep===0;
-  nextBtn.disabled=currentStep===allSteps[currentTopic].length-1;
+  document.getElementById("stepText").innerHTML =
+    `<strong>${allSteps[currentTopic][currentStep].title}</strong><br>${allSteps[currentTopic][currentStep].text}`;
+  prevBtn.disabled = currentStep === 0;
+  nextBtn.disabled = currentStep === allSteps[currentTopic].length - 1;
+  updateActiveTab();
 }
 
 function nextStep(){ if(currentStep<allSteps[currentTopic].length-1){ currentStep++; renderStep(); }}
@@ -373,12 +519,11 @@ function jumpToTopic(){
 function goToTopic(topicIndex) {
   currentTopic = topicIndex;
   currentStep = 0;
-  document.getElementById("topicSelect").value = topicIndex;
   renderStep();
 }
 
 renderStep();
 
 </script>
-    </body>
+  </body>
 </html>
