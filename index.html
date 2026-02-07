@@ -470,7 +470,7 @@ const allSteps = [
         }
     },
     {
-        title: "Step 5: Welcome  ",
+        title: "Step 5: Welcome to your home away from home  ",
     text: `
       <strong>Door Opening Instructions:</strong><br>
       1. Insert the <b>GREEN</b> key into the top keyhole.<br>
@@ -492,12 +492,41 @@ const allSteps = [
   [
   {
     title: "Step 1 – Amenities are located at level P1",
-    text: "Amenties like the swimming pool, gym and sauna are located on Level P1 of the buiding.<br> Take the lift down to Level 'P1' <br> <b> Please remember to take your access card along with you </b>",
+    text: "Amenties such as the swimming pool, gym and sauna are located on Level P1 of the buiding.<br> Take the lift down to Level 'P1' <br> <b> Please remember to take your access card along with you </b>",
     action: () => {
       document.getElementById("map").style.display = "none";
       document.getElementById("content").style.display = "block";
+      document.getElementById("content").innerHTML = `
+            <div class="step-content">
+                <img src='swimming.jpeg'>
+            </div>
+            `;
     }
-  },
+  },{
+    title: "Step 2 – Turn right when exiting the lift",
+    text: "Turn right after exiting the lift. <br>You will see the entrance to the gym, sauna and swimming pool door",
+    action: () => {
+      document.getElementById("map").style.display = "none";
+      document.getElementById("content").style.display = "block";
+      document.getElementById("content").innerHTML = `
+            <div class="step-content">
+                <img src='levelp1.JPG'>
+            </div>
+            `;
+    }
+  },{
+    title: "Step 3 – Scan the keycard against the reader",
+    text: "Scan the keycard against the reader on the left. <br>Push the door open once you hear a beep. <br> <b>ENJOY!!! Please remember to keep your keycard in a safe place! </b>",
+    action: () => {
+      document.getElementById("map").style.display = "none";
+      document.getElementById("content").style.display = "block";
+      document.getElementById("content").innerHTML = `
+            <div class="step-content">
+                <img src='scanP1.JPG'>
+            </div>
+            `;
+    }
+  }
     ],
 
 
@@ -547,7 +576,7 @@ const allSteps = [
       parkingMarker.getPopup().setContent(`<div class="popup-scroll">Unlock the garage gate with the remote<img src="remote.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
       map.flyTo([-33.87703364976371,151.20497041045243], 18);
           openPopupLower(parkingMarker)
-
+          
     }}
     ,
     {
