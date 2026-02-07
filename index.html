@@ -180,7 +180,7 @@ const sunTower = L.marker([-33.87729669864325, 151.2058196775788]).bindPopup(`<s
 const lockboxIcon = L.divIcon({className:'icon-marker',html:`<div class="icon-wrapper"><img src="lockbox.png"></div>`, iconAnchor:[10,17]});
 const lockbox = L.marker([-33.87703364976371,151.20497041045243],{icon:lockboxIcon}).bindPopup(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`,{maxHeight:300,minWidth:330}).addTo(map);
 const apartmentIcon = L.divIcon({className:'icon-marker',html:`<div class="icon-wrapper"><img src="apartment.png"></div>`,iconAnchor:[10,17]});
-const property = L.marker([-33.87682707734486,151.2060015701829],{icon:apartmentIcon}).bindPopup(`<strong>Four Haus Residence</strong><br><img src="apartmentImage.jpg" style="width:300px;border-radius:8px;margin-top:8px;">`).addTo(map);
+const property = L.marker([-33.87682707734486,151.2060015701829],{icon:apartmentIcon}).bindPopup(`<strong>Four Haus Residence</strong><br><img src="apartmentImage.JPG" style="width:300px;border-radius:8px;margin-top:8px;">`).addTo(map);
 const corridorPopup = L.popup({ maxHeight: 300, minWidth:330 }).setContent(`<div class="popup-scroll"><strong>Mall Corridor</strong><br>Walk through the mall corridor<br><img src="corridor.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`);
 
 // Routes
@@ -332,7 +332,7 @@ const allSteps = [
       document.getElementById("map").style.display = "block";
       document.getElementById("content").style.display = "none";
       updateRoute(route2);
-      lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox <img src="lockboxLocation.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`);
+      lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox <img src="lockboxLocation.JPG" style="width:300px;border-radius:8px;margin-top:8px;"></div>`);
       openPopupLower(lockbox)
 
       }
@@ -372,7 +372,7 @@ const allSteps = [
             document.getElementById("content").style.display = "block";
             document.getElementById("content").innerHTML = `
             <div class="step-content">
-                <img src='cardReader.jpg'>
+                <img src='cardReader.JPG'>
             </div>
             `;
         }
@@ -416,7 +416,7 @@ const allSteps = [
             document.getElementById("content").style.display = "block";
             document.getElementById("content").innerHTML = `
             <div class="step-content">
-                <img src='door.jpg'>
+                <img src='door.JPG'>
             </div>
             `;
         }
@@ -481,7 +481,7 @@ const allSteps = [
     title: "Step 5: Park in desginated car spot You are on LEVEL 2",
     text: "Please park in the car space marked 325. This space can accommodate two cars; however, please use only one bay. <br>The lifts are located beside the car spaces. Please take only the lifts that go to Level 25.",
     action: () => {
-      parkingMarker.getPopup().setContent(`<div class="popup-scroll"> <img src="carspot.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
+      parkingMarker.getPopup().setContent(`<div class="popup-scroll"> <img src="carspot.JPG" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
       map.flyTo([-33.87703364976371,151.20497041045243], 18);
           openPopupLower(parkingMarker)
 
