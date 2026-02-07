@@ -57,7 +57,25 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
 #imgModal .closeModal:hover {
   color: #bbb;
 }
+.logo-splash-container {
+  position: fixed;
+  inset: 0;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+  pointer-events: none;
+}
 
+.logo-splash {
+  width: 250px;  /* start bigger */
+  height: auto;
+  object-fit: contain;
+
+  /* slower transitions */
+  transition: transform 2s ease-in-out, width 2s ease-in-out, height 2s ease-in-out, opacity 1s ease-in-out;
+}
 .topic-dropdown {
   position: sticky;
   top: 0;
@@ -185,6 +203,11 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
 </style>
   </head>
   <body>
+    <!-- Splash Animation Logo -->
+<div class="logo-splash-container">
+  <img src="FourHaus.png" alt="Logo" class="logo-splash">
+</div>
+
     <div class="app-header">
       <img src="FourHaus.png" alt="Company Logo" class="logo">
     </div>
@@ -219,6 +242,37 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+
+document.addEventListener("DOMContentLoaded", () => {
+  const splash = document.querySelector(".logo-splash-container");
+  const logoSplash = document.querySelector(".logo-splash");
+  const headerLogo = document.querySelector(".app-header .logo");
+
+  // Keep the splash in center for 1.5s before moving
+  setTimeout(() => {
+    const logoRect = headerLogo.getBoundingClientRect();
+    const splashRect = logoSplash.getBoundingClientRect();
+
+    const offsetX = logoRect.left + logoRect.width/2 - (splashRect.left + splashRect.width/2);
+    const offsetY = logoRect.top + logoRect.height/2 - (splashRect.top + splashRect.height/2);
+
+    // Animate to top bar logo
+    logoSplash.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    logoSplash.style.width = `${logoRect.width}px`;
+    logoSplash.style.height = `${logoRect.height}px`;
+
+    // Fade out slightly after movement
+    setTimeout(() => {
+      logoSplash.style.opacity = 0;
+    }, 2500); // gives time for the glide
+  }, 1500); // initial linger in center
+
+  // Remove splash container after animation
+  logoSplash.addEventListener("transitionend", () => {
+    splash.style.display = "none";
+    goToTopic(0); // load Lockbox tab
+  });
+});
 
 // --- Initialize Map ---
 const map = L.map('map',{ zoomControl:false }).setView([-33.8768, 151.2054], 17);
