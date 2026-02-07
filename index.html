@@ -130,6 +130,86 @@ const route0 = L.polyline([[-33.87729669864325,151.2058196775788],[-33.877171274
 const route1 = L.polyline([[-33.87729669864325,151.2058196775788],[-33.87703364976371,151.20497041045243]],{color:'#2563eb',weight:5});
 const route2 = L.polyline([[-33.87703364976371,151.20497041045243],[-33.87729669864325,151.2058196775788]],{color:'#9333ea',weight:5});
 const route3 = L.polyline([[-33.87729669864325,151.2058196775788],[-33.87682707734486,151.2060015701829]],{color:'#16a34a',weight:5});
+const lockboxLayers = [
+  sunTower,
+  lockbox,
+  property,
+  route0,
+  route1,
+  route2,
+  route3
+];
+
+function showLockboxLayers() {
+  lockboxLayers.forEach(layer => {
+    if (!map.hasLayer(layer)) {
+      layer.addTo(map);
+    }
+  });
+}
+
+function hideLockboxLayers() {
+  lockboxLayers.forEach(layer => {
+    if (map.hasLayer(layer)) {
+      map.removeLayer(layer);
+    }
+  });
+}
+//Parking markers
+const parkingIcon = L.divIcon({
+  className: 'icon-marker',
+  html: `
+    <div class="icon-wrapper">
+      <img src="parkingIcon.png">
+    </div>
+  `,
+  iconAnchor: [10, 17]
+});
+
+
+const lockboxParking = L.marker([-33.87703364976371,151.20497041045243],{icon:lockboxIcon}).bindPopup(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`,{maxHeight:300,minWidth:330}).addTo(map);
+const parkingMarker = L.marker(
+  [-33.87676394971108, 151.2051343753472],
+  { icon: parkingIcon }
+).bindPopup(`
+  <div class="popup-scroll">
+    <strong>Parking Entrance</strong><br>
+    <p>Enter via George Street parking ramp.</p>
+    <img src="parkingEntrance.jpg"
+         style="width:300px;border-radius:8px;margin-top:8px;">
+  </div>
+`);
+
+const parkingRoute = L.polyline([
+  [-33.87621216888041, 151.20499227269897], // parking entrance
+  [-33.87621942917767, 151.20487203199662],
+  [-33.87672764845027, 151.20481737713195],
+  [-33.87676394971108, 151.2051343753472]    // destination
+], { color: '#f59e0b', weight: 5 });
+
+const parkingToEagar = L.polyline([
+  [-33.876754874401485, 151.20502943800545], // parking entrance
+  [-33.87703364976371,151.20497041045243]    // destination
+], { color: '#f59e0b', weight: 5 });
+
+
+// --- Parking Layers Array ---
+const parkingLayers = [
+  parkingMarker,lockboxParking,
+  parkingRoute,parkingToEagar
+];
+
+function showParkingLayers() {
+  parkingLayers.forEach(layer => {
+    if (!map.hasLayer(layer)) layer.addTo(map);
+  });
+}
+
+function hideParkingLayers() {
+  parkingLayers.forEach(layer => {
+    if (map.hasLayer(layer)) map.removeLayer(layer);
+  });
+}
 let activeRoute = null;
 function updateRoute(route){ if(activeRoute && map.hasLayer(activeRoute)){ map.removeLayer(activeRoute); } activeRoute = route; activeRoute.addTo(map); }
 function openPopupLower(marker, zoom=18, offsetY=120){ const point=map.latLngToContainerPoint(marker.getLatLng()); const newPoint=L.point(point.x,point.y-offsetY); map.flyTo(map.containerPointToLatLng(newPoint), zoom); marker.openPopup(); }
@@ -138,11 +218,12 @@ function openPopupLower(marker, zoom=18, offsetY=120){ const point=map.latLngToC
 const allSteps = [
   // --- Topic 0: Lockbox Instructions (Map-based) ---
   [
-    {title:"Step 1 – Approach Sun Tower", text:"Walk through the mall towards the back.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route0); openPopupLower(sunTower); }},
-    {title:"Step 2 – Walk through mall corridor", text:"Continue walking through the mall corridor.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route0); corridorPopup.setLatLng([-33.87717127441062,151.205361210565]).openOn(map); }},
-    {title:"Step 3 – Collect keys on Eagar St", text:"1) The lockbox labelled 4H is located on the first window. <br> 2) Use the code given to unlock. <br> 3) You should take two cards and 2 set of keys and inside the lockbox.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route1); openPopupLower(lockbox); }},
-    {title:"Step 4 – Return to George Street", text:"Walk back the same way you came.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route2); lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="BackToGeorge.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`); }},
-    {title:"Step 5 – Welcome to apartment", text:"Walk to apartment address.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route3); openPopupLower(property); }}
+    {title:"Step 1 – Approach Sun Tower at 591 George Street", text:"Enter the mall, walk past Sun Coffee, and continue straight towards the back.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; showLockboxLayers(); updateRoute(route0); openPopupLower(sunTower); }},
+    {title:"Step 2 – Walk through mall corridor", text:"Keep walking straight through the mall corridor until you reach a glass door labelled “Public Access to Eagar Street.”", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route0); corridorPopup.setLatLng([-33.87717127441062,151.205361210565]).openOn(map); }},
+    {title:"Step 3 – Walk towards Eagar St", text:"1) Exit the mall and walk past Carsia Gardens towards Eagar Street, then turn right. <br>2) The lockbox is located on the first window grille on Eagar Street. <br> 3) Look for the lockbox labelled 4H.", action:()=>{ lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`);document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route1); openPopupLower(lockbox); }},
+    {title:"Step 4 – Collect the keys and key card", text:"1) Retrieve the keys from the lockbox labelled 4H using the code provided. <br> 2) You should see 2 sets of keys and keycards. <b> Please do not take the remote if you do not intend to drive during your stay </b><br> 3) After closing the lockbox, scramble the numbers.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route2); lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox <img src="lockboxLocation.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`); }},
+    {title:"Step 5 – Return to George Street", text:"Walk back the same way you came.", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route2); lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="BackToGeorge.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`); }},
+    {title:"Step 6 – Welcome to your home away from home", text:"After exiting Sun Tower, turn left and walk up the George street towards 569 George St, just a few shops away. <br> <a href='#' onclick='goToTopic(1)'> Click you for Apartment entry instructions </a>", action:()=>{ document.getElementById("map").style.display="block"; document.getElementById("content").style.display="none"; updateRoute(route3); openPopupLower(property); }}
   ],
 
   // --- Topic 1: Building & Apartment Entry ---
@@ -214,8 +295,61 @@ const allSteps = [
 
   // --- Topic 3: Return / Exiting ---
   [
-    {title:"Step 1 – Exit", text:"Instructions placeholder", action:()=>{ document.getElementById("map").style.display="none"; document.getElementById("content").style.display="block"; document.getElementById("content").innerHTML="<h2>Exit</h2><p>Step 1 instructions go here.</p>"; }}
-  ]
+  {
+    title: "Step 1 – Parking is located on Douglas St",
+    text: "On Liverpool St, turn left onto Douglas St. <br> It is a very small alley way, please take note of oncoming vehicles and pedestrians",
+    action: () => {
+      document.getElementById("map").style.display = "block";
+      document.getElementById("content").style.display = "none";
+
+      // Remove all markers & routes
+      hideLockboxLayers();
+      showParkingLayers();
+
+      // Optional: reset map view for parking
+      map.flyTo([-33.8768, 151.2054], 20);
+    }
+    
+  },{
+    title: "Step 2: Pick up the keys from Eagar Street",
+    text: "1) Head to the leftmost window on Eagar Street and locate the lockbox marked “4H.” <br>2) Unlock the lockbox to access the keys, keycards, and remote with the lockcode provided <br>3) Lock the lockbox again by scrambling the numbers.",
+    action: () => {
+      lockboxParking.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox <img src="lockboxLocation.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
+      map.flyTo([-33.87703364976371,151.20497041045243], 20);
+          openPopupLower(lockboxParking)
+
+    }
+    
+},
+{
+    title: "Step 3: Unlock the garage door",
+    text: "Unlock the garage door by pressing 1 on the remote.",
+    action: () => {
+      parkingMarker.getPopup().setContent(`<div class="popup-scroll"><img src=".jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
+      map.flyTo([-33.87703364976371,151.20497041045243], 20);
+          openPopupLower(parkingMarker)
+
+    }}
+    ,
+    {
+    title: "Step 4: Enter the garage and turn left",
+    text: "Car space is located on level 2. <br> Turn left after entering the gate and turn right UP the ramp <br> Keep going up until you see level 2",
+    action: () => {
+      parkingMarker.getPopup().setContent(`<div class="popup-scroll"> <img src="garageInstruction.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
+      map.flyTo([-33.87703364976371,151.20497041045243], 20);
+          openPopupLower(parkingMarker)
+
+    }},
+    {
+    title: "Step 5: Park in desginated car spot You are on LEVEL 2",
+    text: "Please park in the car spot marked 325. This space can fit two cars, but kindly use only one bay <br> The lifts are located beside the car spots. Only take the lifts that goes to Level 25",
+    action: () => {
+      parkingMarker.getPopup().setContent(`<div class="popup-scroll"> <img src="carspot.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
+      map.flyTo([-33.87703364976371,151.20497041045243], 20);
+          openPopupLower(parkingMarker)
+
+    }}
+]
 ];
 
 // Current topic and step
@@ -234,6 +368,12 @@ function prevStep(){ if(currentStep>0){ currentStep--; renderStep(); }}
 function jumpToTopic(){ 
   currentTopic=parseInt(document.getElementById("topicSelect").value); 
   currentStep=0; 
+  renderStep();
+}
+function goToTopic(topicIndex) {
+  currentTopic = topicIndex;
+  currentStep = 0;
+  document.getElementById("topicSelect").value = topicIndex;
   renderStep();
 }
 
