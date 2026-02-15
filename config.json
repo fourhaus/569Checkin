@@ -1,0 +1,681 @@
+{
+    "defaultLanguage": "en",
+    "languages": {
+        "en": {
+            "property": {
+                "name": "Four Haus",
+                "address": "Unit 325, Level 25, 569 George Street, Sydney NSW 2000",
+                "logo": "FourHaus.png",
+                "checkInTime": "3:00 PM onwards",
+                "checkOutTime": "10:00 AM",
+                "wifi": {
+                    "network": "FourHaus_5G",
+                    "password": "Stay@Fourhaus!"
+                },
+                "amenities": "Level P1",
+                "parking": "Level 2",
+                "houseRules": [
+                    "This is a non-smoking apartment.",
+                    "Please keep the access cards and remote safe and respect building rules.",
+                    "Please keep the volume down after 10:00 PM.",
+                    "A fee of $200 will be charged for the replacement of each access card and remote."
+                ]
+            },
+            "generalInfoLabel": "General Info",
+            "buildingAddressLabel": "Building Address",
+            "checkInTimeLabel": "Check-in Time",
+            "checkOutTimeLabel": "Check-out Time",
+            "wifiNetworkLabel": "Wi-Fi Network",
+            "wifiPasswordLabel": "Wi-Fi Password",
+            "amenitiesLabel": "Amenities",
+            "parkingLabel": "Parking",
+            "houseRulesLabel": "House Rules",
+            "generalInfo": "General Information",
+            "topics": [
+                {
+                    "id": 0,
+                    "name": "Lockbox",
+                    "hasMap": true,
+                    "steps": [
+                        {
+                            "title": "Step 1 – Approach Sun Tower at 591 George Street",
+                            "text": "Enter the mall, walk past Sun Coffee, and continue straight towards the back.",
+                            "marker": "sunTower",
+                            "route": "route0",
+                            "image": "Sun Tower.png"
+                        },
+                        {
+                            "title": "Step 2 – Walk through mall corridor",
+                            "text": "Keep walking straight through the mall corridor until you reach a glass door labelled \"Public Access to Eagar Street.\"",
+                            "marker": "corridor",
+                            "route": "route0",
+                            "image": "corridor.gif"
+                        },
+                        {
+                            "title": "Step 3 – Walk towards Eagar St",
+                            "text": "1) Exit the mall and walk towards Eagar Street, then turn right. <br>2) The lockbox is located on the first window grille on Eagar Street. <br> 3) Look for the lockbox labelled '4H'.",
+                            "marker": "lockbox",
+                            "route": "route1",
+                            "image": "eagar.gif"
+                        },
+                        {
+                            "title": "Step 4 – Collect the keys, keycards and remote",
+                            "text": "1) Retrieve the keys from the lockbox labelled '4H' using the code provided. <br> 2) You should see 2 sets of keys and keycards. <br> 3) After closing the lockbox, scramble the numbers.",
+                            "marker": "lockbox",
+                            "route": "route2",
+                            "image": "lockboxLocation.JPG"
+                        },
+                        {
+                            "title": "Step 5 – Return to George Street",
+                            "text": "Walk back the same way you came from.",
+                            "marker": "sunTower",
+                            "route": "route2",
+                            "image": "BackToGeorge.gif"
+                        },
+                        {
+                            "title": "Step 6 – Welcome to your home away from home",
+                            "text": "After exiting Sun Tower, turn left and walk towards 569 George St, just a few shops away. <br> <a href='#' onclick='goToTopic(1)'> <br> Click here for Apartment entry instructions </a>",
+                            "marker": "property",
+                            "route": "route3"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "name": "Parking",
+                    "hasMap": true,
+                    "steps": [
+                        {
+                            "title": "Step 1 – Parking is located on 1 Douglass St",
+                            "text": "On Liverpool Street, turn left onto Douglass Street. <br> Please note this is a small alleyway and can be easily missed. Please also take extra care for oncoming vehicles and pedestrians.",
+                            "marker": "liverpoolSt",
+                            "route": "parkingRoute"
+                        },
+                        {
+                            "title": "Step 2: Collect the keys from Eagar St",
+                            "text": "1) Eagar Street is on the right of Douglass St. <br> 2) Turn into Eagar Street and stop your car in a safe spot.",
+                            "marker": "douglassStEntrance",
+                            "route": "parkingRoute"
+                        },
+                        {
+                            "title": "Step 3: Pick up the keys from Eagar Street",
+                            "text": "1) Head to the first window on Eagar Street and locate the lockbox marked '4H'.<br>2) Unlock the lockbox to access the keys, keycards, and remote with the lockcode provided<br>3) Lock the lockbox by scrambling the numbers.",
+                            "marker": "lockboxParking",
+                            "route": "parkingRoute2",
+                            "image": "eagar4.JPG"
+                        },
+                        {
+                            "title": "Step 4: Unlock the garage door",
+                            "text": "Unlock the garage door by pressing 1 on the remote.",
+                            "marker": "parkingMarker",
+                            "route": "parkingRoute2",
+                            "image": "remote.jpg"
+                        },
+                        {
+                            "title": "Step 5: Enter the garage and turn left",
+                            "text": "1) Car space is located on <b>LEVEL 2</b>. <br> 2) Turn left after entering the gate and turn right UP the ramp <br> 3) Keep going up until you see level 2 <br> 4) The car space is on the left on Level 2, before the ramp goes up again.",
+                            "marker": "parkingMarker",
+                            "route": "parkingRoute2",
+                            "image": "garageInstruction.gif"
+                        },
+                        {
+                            "title": "Step 6: Park in designated car spot",
+                            "text": "Please park in the car space marked 325. This space can accommodate two cars; however, please use only one bay. <br>The lifts are located beside the car spaces. Please take only the lifts that go to Level 25.",
+                            "marker": "parkingMarker",
+                            "route": "parkingRoute2",
+                            "image": "carspot.JPG"
+                        }
+                    ]
+                },
+                {
+                    "id": 1,
+                    "name": "Building Entry",
+                    "hasMap": false,
+                    "steps": [
+                        {
+                            "title": "Step 1 – Building Entry",
+                            "text": "Scan the key card against the reader until you hear a beep. The glass door should open.",
+                            "image": "cardReader.JPG"
+                        },
+                        {
+                            "title": "Step 2 – Walk towards the Lift lobby",
+                            "text": "Proceed to lift lobby. <br> You are on <b>LEVEL 25</b>, only use the lifts on the left with <b> High Rise Access </b>",
+                            "image": "lobby.gif"
+                        },
+                        {
+                            "title": "Step 3 – Enter the lift",
+                            "text": "Scan the key card on the reader and press level 25",
+                            "image": "lift.JPG"
+                        },
+                        {
+                            "title": "Step 4 – Turn right after exiting the lift",
+                            "text": "After exiting the lift, turn right into the corridor. <br> The apartment is located at the end of the corridor.",
+                            "image": "level25.gif"
+                        },
+                        {
+                            "title": "Step 5: Welcome to your home away from home",
+                            "text": "<strong>Door Opening Instructions:</strong><br>1. Insert the <b>GREEN</b> key into the top keyhole.<br>2. Turn the key clockwise and<br>3. Pull down the door handle at the same time while pushing the door open.",
+                            "image": "door.JPG"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "Amenities",
+                    "hasMap": false,
+                    "steps": [
+                        {
+                            "title": "Step 1 – Amenities are located at level P1",
+                            "text": "Amenties such as the swimming pool, gym and sauna are located on Level P1 of the buiding.<br> Take the lift down to Level 'P1' <br> <b> Please remember to take your access card along with you </b>",
+                            "image": "swimming.jpeg"
+                        },
+                        {
+                            "title": "Step 2 – Turn right when exiting the lift",
+                            "text": "Turn right after exiting the lift. <br>You will see the entrance to the gym, sauna and swimming pool door",
+                            "image": "levelp1.JPG"
+                        },
+                        {
+                            "title": "Step 3 – Scan the keycard against the reader",
+                            "text": "Scan the keycard against the reader on the left. <br>Push the door open once you hear a beep. <br> <b>ENJOY!!! Please remember to keep your keycard in a safe place! </b>",
+                            "image": "scanP1.JPG"
+                        }
+                    ]
+                }
+            ]
+        },
+        "zh": {
+            "property": {
+                "name": "Four Haus",
+                "address": "Unit 325, Level 25, 569 George Street, Sydney NSW 2000",
+                "logo": "FourHaus.png",
+                "checkInTime": "下午3:00之后",
+                "checkOutTime": "上午10:00之前",
+                "wifi": {
+                    "network": "FourHaus_5G",
+                    "password": "Stay@Fourhaus!"
+                },
+                "amenities": "P1层",
+                "parking": "2层",
+                "houseRules": [
+                    "公寓内禁止吸烟。",
+                    "请妥善保管门禁卡和车库遥控器，并遵守大楼规定。",
+                    "晚上10点后请降低音量，以免影响邻居。",
+                    "如遗失门禁卡或遥控器，每件需支付 $200 更换费用。"
+                ]
+            },
+            "generalInfoLabel": "基本信息",
+            "buildingAddressLabel": "大楼地址",
+            "checkInTimeLabel": "入住时间",
+            "checkOutTimeLabel": "退房时间",
+            "wifiNetworkLabel": "Wi-Fi名称",
+            "wifiPasswordLabel": "Wi-Fi密码",
+            "amenitiesLabel": "公共设施",
+            "parkingLabel": "停车",
+            "houseRulesLabel": "房屋守则",
+            "generalInfo": "基本信息",
+            "topics": [
+                {
+                    "id": 0,
+                    "name": "钥匙箱",
+                    "hasMap": true,
+                    "steps": [
+                        {
+                            "title": "第1步 – 前往 591 George Street 的 Sun Tower",
+                            "text": "进入商场后，经过 Sun Coffee，继续向前直走至商场深处。",
+                            "marker": "sunTower",
+                            "route": "route0",
+                            "image": "Sun Tower.png"
+                        },
+                        {
+                            "title": "第2步 – 穿过商场走廊",
+                            "text": "沿走廊一直直走，直到看到标有“Public Access to Eagar Street”的玻璃门。",
+                            "marker": "corridor",
+                            "route": "route0",
+                            "image": "corridor.gif"
+                        },
+                        {
+                            "title": "第3步 – 前往 Eagar Street",
+                            "text": "1) 走出商场后朝 Eagar Street 方向并右转。<br>2) 钥匙箱位于 Eagar Street 第一个窗户铁栏处。<br>3) 请寻找标有“4H”的钥匙箱。",
+                            "marker": "lockbox",
+                            "route": "route1",
+                            "image": "eagar.gif"
+                        },
+                        {
+                            "title": "第4步 – 取出钥匙、门禁卡及遥控器",
+                            "text": "1) 使用提供的密码打开标有“4H”的钥匙箱。<br>2) 内有两套钥匙和门禁卡。<br>3) 取出后请重新锁好钥匙箱并打乱密码。",
+                            "marker": "lockbox",
+                            "route": "route2",
+                            "image": "lockboxLocation.JPG"
+                        },
+                        {
+                            "title": "第5步 – 返回 George Street",
+                            "text": "请按原路返回。",
+                            "marker": "sunTower",
+                            "route": "route2",
+                            "image": "BackToGeorge.gif"
+                        },
+                        {
+                            "title": "第6步 – 前往公寓",
+                            "text": "离开 Sun Tower 后向左转，步行至 569 George Street，就在前方几间店铺处。<br><a href='#' onclick='goToTopic(1)'>点击查看公寓入口指引</a>",
+                            "marker": "property",
+                            "route": "route3"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "name": "停车",
+                    "hasMap": true,
+                    "steps": [
+                        {
+                            "title": "第1步 – 前往 Douglass Street",
+                            "text": "在 Liverpool Street 左转进入 Douglass Street。<br>该入口较窄，请注意车辆和行人。",
+                            "marker": "liverpoolSt",
+                            "route": "parkingRoute"
+                        },
+                        {
+                            "title": "第2步 – 前往 Eagar Street 取钥匙",
+                            "text": "1) Eagar Street 位于 Douglass Street 右侧。<br>2) 请在安全位置临时停车。",
+                            "marker": "douglassStEntrance",
+                            "route": "parkingRoute"
+                        },
+                        {
+                            "title": "第3步 – 取钥匙",
+                            "text": "1) 前往第一个窗户铁栏处找到标有“4H”的钥匙箱。<br>2) 输入密码取出钥匙、门禁卡及遥控器。<br>3) 取出后请锁好并打乱密码。",
+                            "marker": "lockboxParking",
+                            "image": "eagar4.JPG",
+                            "route": "parkingRoute2"
+                        },
+                        {
+                            "title": "第4步 – 打开车库门",
+                            "text": "按遥控器上的按钮 1 打开车库门。",
+                            "marker": "parkingMarker",
+                            "image": "remote.jpg",
+                            "route": "parkingRoute2"
+                        },
+                        {
+                            "title": "第5步 – 前往 2 层车位",
+                            "text": "进入后左转，再右转上坡。<br>一直向上至 2 层。<br>车位在左侧。",
+                            "marker": "parkingMarker",
+                            "image": "garageInstruction.gif",
+                            "route": "parkingRoute2"
+                        },
+                        {
+                            "title": "第6步 – 停放车辆",
+                            "text": "请停在编号 325 的车位。该位置可停两辆车，但请只使用一个车位。<br>电梯就在车位旁，请乘坐可到 25 楼的电梯。",
+                            "marker": "parkingMarker",
+                            "image": "carspot.JPG",
+                            "route": "parkingRoute2"
+                        }
+                    ]
+                },
+                {
+                    "id": 1,
+                    "name": "大楼入口",
+                    "hasMap": false,
+                    "steps": [
+                        {
+                            "title": "第1步 – 进入大楼",
+                            "text": "将门禁卡靠近读卡器，听到提示音后玻璃门会自动打开。",
+                            "image": "cardReader.JPG"
+                        },
+                        {
+                            "title": "第2步 – 前往电梯大厅",
+                            "text": "进入电梯大厅。<br>请使用左侧标有 <b>High Rise Access</b> 的电梯前往 <b>25楼</b>。",
+                            "image": "lobby.gif"
+                        },
+                        {
+                            "title": "第3步 – 进入电梯",
+                            "text": "刷卡后按 25 楼。",
+                            "image": "lift.JPG"
+                        },
+                        {
+                            "title": "第4步 – 出电梯后右转",
+                            "text": "出电梯后向右转进入走廊。<br>公寓位于走廊尽头。",
+                            "image": "level25.gif"
+                        },
+                        {
+                            "title": "第5步 – 打开房门",
+                            "text": "<strong>开门方式：</strong><br>1. 将<b>绿色</b>钥匙插入上方钥匙孔。<br>2. 顺时针旋转钥匙。<br>3. 同时按下门把手并推门进入。",
+                            "image": "door.JPG"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "公共设施",
+                    "hasMap": false,
+                    "steps": [
+                        {
+                            "title": "第1步 – 前往 P1 层",
+                            "text": "游泳池、健身房和桑拿均位于大楼 P1 层。<br>请乘电梯至 P1。<br><b>请务必携带门禁卡</b>",
+                            "image": "swimming.jpeg"
+                        },
+                        {
+                            "title": "第2步 – 出电梯后右转",
+                            "text": "出电梯后右转即可看到健身房、泳池及桑拿入口。",
+                            "image": "levelp1.JPG"
+                        },
+                        {
+                            "title": "第3步 – 刷卡进入",
+                            "text": "在左侧读卡器刷卡，听到提示音后推门进入。<br><b>祝您使用愉快，请妥善保管门禁卡！</b>",
+                            "image": "scanP1.JPG"
+                        }
+                    ]
+                }
+            ]
+        },
+        "kr": {
+            "property": {
+                "name": "Four Haus",
+                "address": "Unit 325, Level 25, 569 George Street, Sydney NSW 2000",
+                "logo": "FourHaus.png",
+                "checkInTime": "오후 3시 이후",
+                "checkOutTime": "오전 10시 이전",
+                "wifi": {
+                    "network": "FourHaus_5G",
+                    "password": "Stay@Fourhaus!"
+                },
+                "amenities": "P1층",
+                "parking": "2층",
+                "houseRules": [
+                    "이 숙소는 금연입니다.",
+                    "출입카드와 리모컨을 안전하게 보관해 주세요.",
+                    "밤 10시 이후에는 소음을 줄여 주세요.",
+                    "출입카드 또는 리모컨 분실 시 개당 $200 교체 비용이 발생합니다."
+                ]
+            },
+            "generalInfoLabel": "기본 정보",
+            "buildingAddressLabel": "건물 주소",
+            "checkInTimeLabel": "체크인 시간",
+            "checkOutTimeLabel": "체크아웃 시간",
+            "wifiNetworkLabel": "와이파이 이름",
+            "wifiPasswordLabel": "와이파이 비밀번호",
+            "amenitiesLabel": "편의시설",
+            "parkingLabel": "주차",
+            "houseRulesLabel": "숙소 규칙",
+            "generalInfo": "기본 정보",
+            "topics": [
+                {
+                    "id": 0,
+                    "name": "열쇠함",
+                    "hasMap": true,
+                    "steps": [
+                        {
+                            "title": "1단계 – 591 George Street 의 Sun Tower 로 이동",
+                            "text": "쇼핑몰로 들어가 Sun Coffee 를 지나 계속 직진하세요.",
+                            "marker": "sunTower",
+                            "route": "route0",
+                            "image": "Sun Tower.png"
+                        },
+                        {
+                            "title": "2단계 – 쇼핑몰 복도 통과",
+                            "text": "\"Public Access to Eagar Street\" 라고 표시된 유리문이 보일 때까지 직진하세요.",
+                            "marker": "corridor",
+                            "route": "route0",
+                            "image": "corridor.gif"
+                        },
+                        {
+                            "title": "3단계 – Eagar Street 방향 이동",
+                            "text": "쇼핑몰을 나와 Eagar Street 방향으로 이동 후 우회전하세요. 첫 번째 창문 철창에서 '4H' 열쇠함을 찾으세요.",
+                            "marker": "lockbox",
+                            "route": "route1",
+                            "image": "eagar.gif"
+                        },
+                        {
+                            "title": "4단계 – 열쇠 수령",
+                            "text": "코드로 열쇠함을 열어 열쇠와 카드 두 세트를 꺼낸 후 다시 잠그고 번호를 섞어주세요.",
+                            "marker": "lockbox",
+                            "route": "route2",
+                            "image": "lockboxLocation.JPG"
+                        },
+                        {
+                            "title": "5단계 – George Street 로 돌아가기",
+                            "text": "왔던 길로 다시 돌아가세요.",
+                            "marker": "sunTower",
+                            "route": "route2",
+                            "image": "BackToGeorge.gif"
+                        },
+                        {
+                            "title": "6단계 – 아파트로 이동",
+                            "text": "Sun Tower 를 나와 좌회전 후 몇 개 상점 지나 569 George Street 로 이동하세요.<br><a href='#' onclick='goToTopic(1)'>아파트 입구 안내 보기</a>",
+                            "marker": "property",
+                            "route": "route3"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "name": "주차",
+                    "hasMap": true,
+                    "steps": [
+                        {
+                            "title": "1단계 – Douglass Street 이동",
+                            "text": "Liverpool Street 에서 Douglass Street 로 좌회전하세요. 좁은 골목이니 주의하세요.",
+                            "marker": "liverpoolSt",
+                            "route": "parkingRoute"
+                        },
+                        {
+                            "title": "2단계 – Eagar Street 로 이동",
+                            "text": "Douglass Street 오른쪽에 Eagar Street 가 있습니다. 안전한 곳에 정차하세요.",
+                            "marker": "douglassStEntrance",
+                            "route": "parkingRoute"
+                        },
+                        {
+                            "title": "3단계 – 열쇠 수령",
+                            "text": "'4H' 열쇠함에서 열쇠와 리모컨을 꺼내고 다시 잠그세요.",
+                            "marker": "lockboxParking",
+                            "route": "parkingRoute2",
+                            "image": "eagar4.JPG"
+                        },
+                        {
+                            "title": "4단계 – 차고 문 열기",
+                            "text": "리모컨의 1번 버튼을 눌러 문을 여세요.",
+                            "marker": "parkingMarker",
+                            "route": "parkingRoute2",
+                            "image": "remote.jpg"
+                        },
+                        {
+                            "title": "5단계 – 2층으로 이동",
+                            "text": "입구에서 좌회전 후 램프로 올라 2층으로 이동하세요. 왼쪽에 주차공간이 있습니다.",
+                            "marker": "parkingMarker",
+                            "route": "parkingRoute2",
+                            "image": "garageInstruction.gif"
+                        },
+                        {
+                            "title": "6단계 – 325번 주차",
+                            "text": "325번 공간에 주차하세요. 엘리베이터는 바로 옆에 있습니다.",
+                            "marker": "parkingMarker",
+                            "route": "parkingRoute2",
+                            "image": "carspot.JPG"
+                        }
+                    ]
+                },
+                {
+                    "id": 1,
+                    "name": "건물 입구",
+                    "hasMap": false,
+                    "steps": [
+                        {
+                            "title": "1단계 – 건물 입장",
+                            "text": "카드를 리더기에 대면 신호음 후 문이 열립니다.",
+                            "image": "cardReader.JPG"
+                        },
+                        {
+                            "title": "2단계 – 엘리베이터 로비 이동",
+                            "text": "왼쪽의 High Rise Access 엘리베이터를 이용해 25층으로 이동하세요.",
+                            "image": "lobby.gif"
+                        },
+                        {
+                            "title": "3단계 – 엘리베이터 탑승",
+                            "text": "카드를 스캔하고 25층을 누르세요.",
+                            "image": "lift.JPG"
+                        },
+                        {
+                            "title": "4단계 – 엘리베이터에서 내려 오른쪽",
+                            "text": "내린 후 오른쪽 복도로 이동하세요. 아파트는 끝에 있습니다.",
+                            "image": "level25.gif"
+                        },
+                        {
+                            "title": "5단계 – 문 열기",
+                            "text": "초록색 열쇠를 위쪽 열쇠구멍에 넣고 시계 방향으로 돌리면서 손잡이를 내려 문을 여세요.",
+                            "image": "door.JPG"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "편의시설",
+                    "hasMap": false,
+                    "steps": [
+                        {
+                            "title": "1단계 – P1층 이동",
+                            "text": "수영장, 헬스장, 사우나는 P1층에 있습니다. 엘리베이터로 P1층으로 이동하세요. 카드 지참 필수.",
+                            "image": "swimming.jpeg"
+                        },
+                        {
+                            "title": "2단계 – 엘리베이터에서 내려 오른쪽",
+                            "text": "내리면 오른쪽에 시설 입구가 있습니다.",
+                            "image": "levelp1.JPG"
+                        },
+                        {
+                            "title": "3단계 – 카드 스캔",
+                            "text": "리더기에 카드를 대면 문이 열립니다. 즐겁게 이용하세요.",
+                            "image": "scanP1.JPG"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "mapCenter": [
+        -33.8768,
+        151.2054
+    ],
+    "mapZoom": 17,
+    "tiles": "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    "markers": {
+        "sunTower": {
+            "lat": -33.87729669864325,
+            "lng": 151.2058196775788,
+            "title": "Sun Tower Entrance",
+            "image": "Sun Tower.png"
+        },
+        "lockbox": {
+            "lat": -33.87703364976371,
+            "lng": 151.20497041045243,
+            "title": "Lockbox – Located on Eagar Street",
+            "icon": "./lockbox.png",
+            "image": "eagar.gif"
+        },
+        "property": {
+            "lat": -33.87682707734486,
+            "lng": 151.2060015701829,
+            "title": "Four Haus Residence",
+            "icon": "./apartment.png",
+            "image": "apartmentImage.JPG"
+        },
+        "corridor": {
+            "lat": -33.87717127441062,
+            "lng": 151.205361210565,
+            "title": "Mall Corridor",
+            "image": "corridor.gif"
+        },
+        "liverpoolSt": {
+            "lat": -33.87621216888041,
+            "lng": 151.20499227269897,
+            "title": "Turn left on Liverpool St onto Douglass Street",
+            "image": "liverpoolSt.png"
+        },
+        "douglassStEntrance": {
+            "lat": -33.87679156194186,
+            "lng": 151.20500212127874,
+            "title": "Head to Eagar Street to collect your keys",
+            "image": "douglasSt.png"
+        },
+        "lockboxParking": {
+            "lat": -33.87703364976371,
+            "lng": 151.20497041045243,
+            "title": "Lockbox – Located on Eagar Street",
+            "icon": "lockbox.png",
+            "image": "eagar4.JPG"
+        },
+        "parkingMarker": {
+            "lat": -33.87676394971108,
+            "lng": 151.2051343753472,
+            "title": "Parking Entrance",
+            "icon": "parkingIcon.png",
+            "image": "remote.jpg"
+        }
+    },
+    "routes": {
+        "route0": [
+            [
+                -33.87729669864325,
+                151.2058196775788
+            ],
+            [
+                -33.87717127441062,
+                151.205361210565
+            ]
+        ],
+        "route1": [
+            [
+                -33.87729669864325,
+                151.2058196775788
+            ],
+            [
+                -33.87703364976371,
+                151.20497041045243
+            ]
+        ],
+        "route2": [
+            [
+                -33.87703364976371,
+                151.20497041045243
+            ],
+            [
+                -33.87729669864325,
+                151.2058196775788
+            ]
+        ],
+        "route3": [
+            [
+                -33.87729669864325,
+                151.2058196775788
+            ],
+            [
+                -33.87682707734486,
+                151.2060015701829
+            ]
+        ],
+        "parkingRoute": [
+            [
+                -33.87621216888041,
+                151.20499227269897
+            ],
+            [
+                -33.87621942917767,
+                151.20487203199662
+            ],
+            [
+                -33.87672764845027,
+                151.20481737713195
+            ],
+            [
+                -33.87676394971108,
+                151.2051343753472
+            ]
+        ],
+        "parkingRoute2": [
+            [
+                -33.876754874401485,
+                151.20502943800545
+            ],
+            [
+                -33.87703364976371,
+                151.20497041045243
+            ]
+        ]
+    }
+}

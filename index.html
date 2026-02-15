@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="robots" content="noindex, nofollow">
-    <title>Check-in Instructions</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
-#map { height: 100vh; width: 100vw; }
-#content { display:none; padding:16px; }
+    <head>
+        <meta charset="utf-8" />
+        <meta name="robots" content="noindex, nofollow">
+        <title>Check-in Instructions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <style>
+body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+#map { height: 100%; width: 100vw; flex: 1; }
+#content { display:none; padding:16px; height: 100%; overflow-y: auto; }
+#content.with-instruction-bar { padding-top:180px; }
 /* --- Dropdown Bar --- */
 /* --- Image Modal --- */
 
@@ -98,8 +99,7 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
   transition: all 0.2s;
 }
 .app-header {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 3000;
   background: white;
   padding: 10px 16px;
@@ -107,12 +107,43 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
   justify-content: center;
   align-items: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  flex-shrink: 0;
 }
 
 .logo {
   height: 32px;
   max-width: 160px;
   object-fit: contain;
+}
+
+.language-switcher {
+  position: absolute;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.lang-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  color: #333;
+}
+
+.lang-btn:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.lang-btn.active {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
 }
 
 .topic-dropdown select:hover {
@@ -137,12 +168,12 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
   margin-top: 16px;
 }
 .app-bar {
-  position: sticky;
-  top: 56px; /* logo height */
+  position: relative;
   z-index: 2500;
   background: white;
   padding: 8px 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  flex-shrink: 0;
 }
 
 .app-tabs {
@@ -176,9 +207,10 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
 /* --- Step Bar --- */
 
 .instruction-bar {
-  position: sticky;
-  top: 110px; /* header + dropdown */
-  margin: 12px auto;
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
   width: calc(100% - 24px);
   max-width: 520px;
   background: white;
@@ -200,55 +232,130 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
 .step-text strong { display:block; font-size:15px;}
 .topic-dropdown { position:sticky; top:0; background:white; padding:8px 16px; z-index:2000; box-shadow:0 2px 6px rgba(0,0,0,0.15);}
 .topic-dropdown select { padding:6px 10px; font-size:14px; border-radius:6px; border:1px solid #ccc;}
-</style>
-  </head>
-  <body>
-    <!-- Splash Animation Logo -->
-<div class="logo-splash-container">
-  <img src="FourHaus.png" alt="Logo" class="logo-splash">
-</div>
+    </style>
+    </head>
+    <body>
+        <!-- Splash Animation Logo -->
+        <div class="logo-splash-container">
+            <img id="splashLogo" alt="Logo" class="logo-splash">
+        </div>
 
-    <div class="app-header">
-      <img src="FourHaus.png" alt="Company Logo" class="logo">
-    </div>
-    <div id="imgModal">
-      <span class="closeModal">&times;</span>
-      <img id="modalImg" src />
-    </div>
-    <!-- Topic Selector -->
-    <div class="app-bar">
-      <div class="app-tabs">
-        <button onclick="goToTopic(0)" id="tab-0">Lockbox</button>
-        <button onclick="goToTopic(3)" id="tab-3">Parking</button>
-        <button onclick="goToTopic(1)" id="tab-1">Building Entry</button>
-        <button onclick="goToTopic(2)" id="tab-2">Amenities</button>
-        <button onclick="showGeneralInfo()" id="tab-4">General Info</button>
+        <div class="app-header">
+            <img id="headerLogo" alt="Company Logo" class="logo">
+            <div class="language-switcher">
+                <button class="lang-btn active" data-lang="en">English</button>
+                <button class="lang-btn" data-lang="zh">中文</button>
+                <button class="lang-btn" data-lang="kr">한국어</button>
+            </div>
+        </div>
+        <div id="imgModal">
+            <span class="closeModal">&times;</span>
+            <img id="modalImg" src />
+        </div>
 
-      </div>
-    </div>
+        <!-- Topic Selector -->
+        <div class="app-bar">
+            <div class="app-tabs" id="tabsContainer"></div>
+        </div>
 
-    <!-- Step Navigation Bar -->
-    <div class="instruction-bar">
-      <button class="nav-btn" id="prevBtn" onclick="prevStep()">‹</button>
-      <div class="step-text" id="stepText"></div>
-      <button class="nav-btn" id="nextBtn" onclick="nextStep()">›</button>
-    </div>
+        <!-- Step Navigation Bar -->
+        <div class="instruction-bar">
+            <button class="nav-btn" id="prevBtn" onclick="prevStep()">‹</button>
+            <div class="step-text" id="stepText"></div>
+            <button class="nav-btn" id="nextBtn" onclick="nextStep()">›</button>
+        </div>
 
-    <!-- Map for topics that need it -->
-    <div id="map"></div>
+        <!-- Map for topics that need it -->
+        <div id="map"></div>
 
-    <!-- Content div for topics without map -->
-    <div id="content"></div>
+        <!-- Content div for topics without map -->
+        <div id="content"></div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        
+        <script>
 
-document.addEventListener("DOMContentLoaded", () => {
+// Global config and state
+let config = null;
+let map = null;
+let currentTopic = 0;
+let currentStep = 0;
+let currentLanguage = 'en';
+let markerInstances = {};
+let routeInstances = {};
+let activeRoute = null;
+let visibleMarkers = new Set(); // Track which markers are visible
+let visibleRoutes = new Set();  // Track which routes are visible
+
+// Load config from JSON
+async function loadConfig() {
+  try {
+    const response = await fetch('./config.json');
+    config = await response.json();
+    currentLanguage = config.defaultLanguage;
+    initApp();
+  } catch (error) {
+    console.error('Failed to load config:', error);
+  }
+}
+
+function initApp() {
+  // Set logos
+  document.getElementById('splashLogo').src = config.languages[currentLanguage].property.logo;
+  document.getElementById('headerLogo').src = config.languages[currentLanguage].property.logo;
+
+  // Initialize splash animation
+  initSplashAnimation();
+
+  // Initialize map
+  initMap();
+
+  // Render topic tabs
+  renderTabs();
+
+  // Load first topic
+  goToTopic(0);
+
+  // Setup language switcher
+  setupLanguageSwitcher();
+}
+
+function setupLanguageSwitcher() {
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const lang = e.target.getAttribute('data-lang');
+      switchLanguage(lang);
+    });
+  });
+}
+
+function switchLanguage(lang) {
+  if (lang === currentLanguage) return;
+  
+  currentLanguage = lang;
+  
+  // Update active button
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.getAttribute('data-lang') === lang) {
+      btn.classList.add('active');
+    }
+  });
+
+  // Reset to first topic
+  currentTopic = 0;
+  currentStep = 0;
+
+  // Re-render everything
+  renderTabs();
+  renderStep();
+}
+
+function initSplashAnimation() {
   const splash = document.querySelector(".logo-splash-container");
   const logoSplash = document.querySelector(".logo-splash");
   const headerLogo = document.querySelector(".app-header .logo");
 
-  // Keep the splash in center for 1.5s before moving
   setTimeout(() => {
     const logoRect = headerLogo.getBoundingClientRect();
     const splashRect = logoSplash.getBoundingClientRect();
@@ -256,498 +363,336 @@ document.addEventListener("DOMContentLoaded", () => {
     const offsetX = logoRect.left + logoRect.width/2 - (splashRect.left + splashRect.width/2);
     const offsetY = logoRect.top + logoRect.height/2 - (splashRect.top + splashRect.height/2);
 
-    // Animate to top bar logo
     logoSplash.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
     logoSplash.style.width = `${logoRect.width}px`;
     logoSplash.style.height = `${logoRect.height}px`;
 
-    // Fade out slightly after movement
     setTimeout(() => {
       logoSplash.style.opacity = 0;
-    }, 2500); // gives time for the glide
-  }, 1500); // initial linger in center
+    }, 2500);
+  }, 1500);
 
-  // Remove splash container after animation
   logoSplash.addEventListener("transitionend", () => {
     splash.style.display = "none";
-    goToTopic(0); // load Lockbox tab
   });
-});
+}
 
-// --- Initialize Map ---
-const map = L.map('map',{ zoomControl:false }).setView([-33.8768, 151.2054], 17);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {subdomains:'abcd', maxZoom:20}).addTo(map);
-L.control.zoom({ position: 'bottomright' }).addTo(map);
+function initMap() {
+  const [lat, lng] = config.mapCenter;
+  map = L.map('map', { zoomControl: false }).setView([lat, lng], config.mapZoom);
+  L.tileLayer(config.tiles, { subdomains: 'abcd', maxZoom: 20 }).addTo(map);
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-// --- Map Markers (Lockbox Topic) ---
-const sunTower = L.marker([-33.87729669864325, 151.2058196775788]).bindPopup(`<strong>Sun Tower Entrance</strong><br><img src="Sun Tower.png" style="width:300px;border-radius:8px;margin-top:8px;">`).addTo(map);
-const lockboxIcon = L.divIcon({className:'icon-marker',html:`<div class="icon-wrapper"><img src="lockbox.png"></div>`, iconAnchor:[10,17]});
-const lockbox = L.marker([-33.87703364976371,151.20497041045243],{icon:lockboxIcon}).bindPopup(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`,{maxHeight:300,minWidth:330}).addTo(map);
-const apartmentIcon = L.divIcon({className:'icon-marker',html:`<div class="icon-wrapper"><img src="apartment.png"></div>`,iconAnchor:[10,17]});
-const property = L.marker([-33.87682707734486,151.2060015701829],{icon:apartmentIcon}).bindPopup(`<strong>Four Haus Residence</strong><br><img src="apartmentImage.JPG" style="width:300px;border-radius:8px;margin-top:8px;">`).addTo(map);
-const corridorPopup = L.popup({ maxHeight: 300, minWidth:330 }).setContent(`<div class="popup-scroll"><strong>Mall Corridor</strong><br>Walk through the mall corridor<br><img src="corridor.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`);
+  // Create all markers from config
+  Object.entries(config.markers).forEach(([key, markerData]) => {
+    const markerConfig = {
+      lat: markerData.lat,
+      lng: markerData.lng,
+      title: markerData.title,
+      image: markerData.image,
+      icon: markerData.icon
+    };
+    markerInstances[key] = createMarker(markerConfig);
+  });
 
-// Routes
-const route0 = L.polyline([[-33.87729669864325,151.2058196775788],[-33.87717127441062,151.205361210565]],{color:'#0ea5e9',weight:5});
-const route1 = L.polyline([[-33.87729669864325,151.2058196775788],[-33.87703364976371,151.20497041045243]],{color:'#2563eb',weight:5});
-const route2 = L.polyline([[-33.87703364976371,151.20497041045243],[-33.87729669864325,151.2058196775788]],{color:'#9333ea',weight:5});
-const route3 = L.polyline([[-33.87729669864325,151.2058196775788],[-33.87682707734486,151.2060015701829]],{color:'#16a34a',weight:5});
-const lockboxLayers = [
-  sunTower,
-  lockbox,
-  property,
-  route0,
-  route1,
-  route2,
-  route3
-];
+  // Create all routes from config
+  Object.entries(config.routes).forEach(([key, coordinates]) => {
+    routeInstances[key] = L.polyline(coordinates, { color: getRouteColor(key), weight: 5 });
+  });
+}
 
-function showLockboxLayers() {
-  lockboxLayers.forEach(layer => {
-    if (!map.hasLayer(layer)) {
-      layer.addTo(map);
+function getRouteColor(routeKey) {
+  const colors = { route0: '#0ea5e9', route1: '#2563eb', route2: '#9333ea', route3: '#16a34a', parkingRoute: '#f59e0b', parkingToEagar: '#f59e0b' };
+  return colors[routeKey] || '#2563eb';
+}
+
+
+function createMarker(markerData) {
+  // Build marker options
+  const markerOptions = {};
+
+  // Use a divIcon only if markerData.icon exists
+  if (markerData.icon) {
+    markerOptions.icon = L.divIcon({
+      className: 'icon-marker',
+      html: `<div class="icon-wrapper"><img src="${markerData.icon}"></div>`,
+      iconAnchor: [12, 24], // adjust anchor to match your div size
+    });
+  }
+  // If no icon, leave markerOptions empty → Leaflet uses default blue marker
+
+  // Create marker
+  const marker = L.marker([markerData.lat, markerData.lng], markerOptions);
+
+  // Build popup content
+  let popupHtml = `<div class="popup-scroll"><strong>${markerData.title}</strong>`;
+  if (markerData.image) {
+    popupHtml += `<br><img src="${markerData.image}" style="width:300px;border-radius:8px;margin-top:8px;">`;
+  }
+  popupHtml += `</div>`;
+
+  // Bind popup
+  marker.bindPopup(popupHtml, { maxHeight: 300, minWidth: 330 });
+
+  return marker;
+}
+
+function renderTabs() {
+  const tabsContainer = document.getElementById('tabsContainer');
+  tabsContainer.innerHTML = '';
+
+  const currentConfig = config.languages[currentLanguage];
+  currentConfig.topics.forEach(topic => {
+    const btn = document.createElement('button');
+    btn.id = `tab-${topic.id}`;
+    btn.textContent = topic.name;
+    btn.onclick = () => goToTopic(topic.id);
+    tabsContainer.appendChild(btn);
+  });
+
+  // Add General Info button
+  const generalBtn = document.createElement('button');
+  generalBtn.id = `tab-general`;
+  generalBtn.textContent = currentConfig.generalInfoLabel;
+  generalBtn.onclick = () => showGeneralInfo();
+  tabsContainer.appendChild(generalBtn);
+}
+
+function updateRoute(routeKey) {
+  if (activeRoute && map.hasLayer(activeRoute)) {
+    map.removeLayer(activeRoute);
+  }
+  activeRoute = routeInstances[routeKey];
+  if (activeRoute) {
+    activeRoute.addTo(map);
+  }
+}
+
+function openPopupLower(marker, zoom = 18, offsetY = 0) {
+  const point = map.latLngToContainerPoint(marker.getLatLng());
+  const newPoint = L.point(point.x, point.y - offsetY);
+  map.flyTo(map.containerPointToLatLng(newPoint), zoom);
+  marker.openPopup();
+}
+
+function showAllMarkers(markerKeys) {
+  markerKeys.forEach(key => {
+    if (markerInstances[key] && !map.hasLayer(markerInstances[key])) {
+      markerInstances[key].addTo(map);
     }
   });
 }
 
-function hideLockboxLayers() {
-  lockboxLayers.forEach(layer => {
-    if (map.hasLayer(layer)) {
-      map.removeLayer(layer);
+function hideMarkers(markerKeys) {
+  markerKeys.forEach(key => {
+    if (markerInstances[key] && map.hasLayer(markerInstances[key])) {
+      map.removeLayer(markerInstances[key]);
     }
   });
 }
-//Parking markers
-const parkingIcon = L.divIcon({
-  className: 'icon-marker',
-  html: `
-    <div class="icon-wrapper">
-      <img src="parkingIcon.png">
-    </div>
-  `,
-  iconAnchor: [10, 17]
-});
 
+function renderStep() {
+  const currentConfig = config.languages[currentLanguage];
+  console.log(currentTopic)
+  const topic = currentConfig.topics.find(t => t.id === currentTopic);
+  console.log(topic)
+  const step = topic.steps[currentStep];
 
-const lockboxParking = L.marker([-33.87703364976371,151.20497041045243],{icon:lockboxIcon}).bindPopup(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`,{maxHeight:300,minWidth:330}).addTo(map);
-const parkingMarker = L.marker(
-  [-33.87676394971108, 151.2051343753472],
-  { icon: parkingIcon }
-).bindPopup(`
-  <div class="popup-scroll">
-    <strong>Parking Entrance</strong><br>
-    <p>Enter via George Street parking ramp.</p>
-    <img src="parkingEntrance.jpg"
-         style="width:300px;border-radius:8px;margin-top:8px;">
-  </div>
-`);
+  // Update step text
+  document.getElementById("stepText").innerHTML = `<strong>${step.title}</strong><br>${step.text}`;
 
-const liverpoolSt = L.marker(
-  [-33.87621216888041, 151.20499227269897],
-).bindPopup(`
-  <div class="popup-scroll">
-    <strong>Turn left on Liverpool St onto Douglass Street</strong><br>
-    <img src="liverpoolSt.png"
-         style="width:300px;border-radius:8px;margin-top:8px;">
-  </div>
-`);
+  // Update buttons
+  document.getElementById("prevBtn").disabled = currentStep === 0;
+  document.getElementById("nextBtn").disabled = currentStep === topic.steps.length - 1;
 
-const douglassStEntrance = L.marker(
-  [-33.87679156194186, 151.20500212127874
-],
-).bindPopup(`
-  <div class="popup-scroll">
-    <strong>Head to Eagar Street to collect your keys</strong><br>
-    <img src="douglasSt.png"
-         style="width:300px;border-radius:8px;margin-top:8px;">
-  </div>
-`);
+  // Update display
+  if (topic.hasMap) {
+    document.getElementById("map").style.display = "block";
+    document.getElementById("content").style.display = "none";
+    document.querySelector(".instruction-bar").style.display = "flex";
 
-const parkingRoute = L.polyline([
-  [-33.87621216888041, 151.20499227269897], // parking entrance
-  [-33.87621942917767, 151.20487203199662],
-  [-33.87672764845027, 151.20481737713195],
-  [-33.87676394971108, 151.2051343753472]    // destination
-], { color: '#f59e0b', weight: 5 });
+    // --- Only remove all markers/routes if switching topics ---
+    if (currentStep === 0) {
+      Object.values(markerInstances).forEach(marker => {
+        if (map.hasLayer(marker)) {
+          map.removeLayer(marker);
+        }
+      });
+      visibleMarkers = new Set();
 
-const parkingToEagar = L.polyline([
-  [-33.876754874401485, 151.20502943800545], // parking entrance
-  [-33.87703364976371,151.20497041045243]    // destination
-], { color: '#f59e0b', weight: 5 });
-
-
-// --- Parking Layers Array ---
-const parkingLayers = [
-  parkingMarker,lockboxParking,
-  parkingRoute,parkingToEagar,
-  douglassStEntrance, 
-  liverpoolSt
-];
-
-function showParkingLayers() {
-  parkingLayers.forEach(layer => {
-    if (!map.hasLayer(layer)) layer.addTo(map);
-  });
-}
-
-function hideParkingLayers() {
-  parkingLayers.forEach(layer => {
-    if (map.hasLayer(layer)) map.removeLayer(layer);
-  });
-}
-let activeRoute = null;
-function updateRoute(route){ if(activeRoute && map.hasLayer(activeRoute)){ map.removeLayer(activeRoute); } activeRoute = route; activeRoute.addTo(map); }
-function openPopupLower(marker, zoom=18, offsetY=0){ const point=map.latLngToContainerPoint(marker.getLatLng()); const newPoint=L.point(point.x,point.y-offsetY); map.flyTo(map.containerPointToLatLng(newPoint), zoom); marker.openPopup(); }
-
-// --- Steps for All Topics ---
-const allSteps = [
-  // --- Topic 0: Lockbox Instructions (Map-based) ---
-  [
-  {
-    title: "Step 1 – Approach Sun Tower at 591 George Street",
-    text: "Enter the mall, walk past Sun Coffee, and continue straight towards the back.",
-    action: () => {
-      document.getElementById("map").style.display = "block";
-      document.getElementById("content").style.display = "none";
-      document.querySelector(".instruction-bar").style.display = "flex";
-
-      showLockboxLayers();
-      hideParkingLayers();
-      updateRoute(route0);
-      openPopupLower(sunTower);
-      sunTower.getPopup().setContent(`<strong>Sun Tower Entrance</strong><br><img src="Sun Tower.png" style="width:300px;border-radius:8px;margin-top:8px;">`)
+      Object.values(routeInstances).forEach(route => {
+        if (map.hasLayer(route)) {
+          map.removeLayer(route);
+        }
+      });
+      visibleRoutes = new Set();
     }
-  },
-  {
-    title: "Step 2 – Walk through mall corridor",
-    text: "Keep walking straight through the mall corridor until you reach a glass door labelled “Public Access to Eagar Street.”",
-    action: () => {
-      document.getElementById("map").style.display = "block";
-      document.getElementById("content").style.display = "none";
-      updateRoute(route0);
-      corridorPopup
-        .setLatLng([-33.87717127441062,151.205361210565])
-        .setContent(`<div class="popup-scroll"><strong>Mall Corridor</strong><br>Walk through the mall corridor<br><img src="corridor.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
-        .openOn(map);
-            openPopupLower(corridorPopup);
 
-    }
-  },
-  {
-    title: "Step 3 – Walk towards Eagar St",
-    text: "1) Exit the mall and walk towards Eagar Street, then turn right. <br>2) The lockbox is located on the first window grille on Eagar Street. <br> 3) Look for the lockbox labelled '4H'.",
-    action: () => {
-      lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox – Located on Eagar Street</strong><br><img src="eagar.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`);
-      document.getElementById("map").style.display = "block";
-      document.getElementById("content").style.display = "none";
-      updateRoute(route1);
-      openPopupLower(lockbox);
-    }
-  },
-  {
-    title: "Step 4 – Collect the keys, keycards and remote",
-    text: "1) Retrieve the keys from the lockbox labelled '4H' using the code provided. <br> 2) You should see 2 sets of keys and keycards. <br> 3) After closing the lockbox, scramble the numbers.",
-    action: () => {
-      document.getElementById("map").style.display = "block";
-      document.getElementById("content").style.display = "none";
-      updateRoute(route2);
-      lockbox.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox <img src="lockboxLocation.JPG" style="width:300px;border-radius:8px;margin-top:8px;"></div>`);
-      openPopupLower(lockbox)
-
+    // --- Show markers for all steps up to currentStep ---
+    // Remove all markers first
+    Object.values(markerInstances).forEach(marker => {
+      if (map.hasLayer(marker)) {
+        map.removeLayer(marker);
       }
-  },
-  {
-    title: "Step 5 – Return to George Street",
-    text: "Walk back the same way you came from.",
-    action: () => {
-      document.getElementById("map").style.display = "block";
-      document.getElementById("content").style.display = "none";
-      updateRoute(route2);
-      sunTower.getPopup()
-        .setContent(`<div class="popup-scroll"><strong>Return to George Street</strong><br><img src="BackToGeorge.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
-        .openOn(map);
-      openPopupLower(sunTower)
+    });
+    visibleMarkers = new Set();
+
+    // Add markers for steps up to currentStep
+    for (let i = 0; i <= currentStep; i++) {
+      const s = topic.steps[i];
+      if (s.marker && markerInstances[s.marker]) {
+        const marker = markerInstances[s.marker];
+        const markerData = config.markers[s.marker];
+        let popupHtml = `<div class="popup-scroll"><strong>${markerData.title}</strong>`;
+        const imageToUse = s.image || markerData.image;
+        if (imageToUse) {
+          popupHtml += `<br><img src="${imageToUse}" style="width:300px;border-radius:8px;margin-top:8px;">`;
+        }
+        popupHtml += `</div>`;
+        marker.setPopupContent(popupHtml);
+
+        marker.addTo(map);
+        visibleMarkers.add(s.marker);
+      }
     }
-  },
-  {
-    title: "Step 6 – Welcome to your home away from home",
-    text: "After exiting Sun Tower, turn left and walk towards 569 George St, just a few shops away. <br> <a href='#' onclick='goToTopic(1)'> <br> Click here for Apartment entry instructions </a>",
-    action: () => {
-      document.getElementById("map").style.display = "block";
-      document.getElementById("content").style.display = "none";
-      updateRoute(route3);
-      openPopupLower(property);
+
+    // Open popup for current step's marker
+    if (step.marker && markerInstances[step.marker]) {
+      openPopupLower(markerInstances[step.marker]);
     }
+
+    // --- Show routes for all steps up to currentStep ---
+    Object.values(routeInstances).forEach(route => {
+      if (map.hasLayer(route)) {
+        map.removeLayer(route);
+      }
+    });
+    visibleRoutes = new Set();
+
+    for (let i = 0; i <= currentStep; i++) {
+      const s = topic.steps[i];
+      if (s.route && routeInstances[s.route]) {
+        routeInstances[s.route].addTo(map);
+        visibleRoutes.add(s.route);
+      }
+    }
+  } else {
+    document.getElementById("map").style.display = "none";
+    document.getElementById("content").style.display = "block";
+    document.getElementById("content").classList.add("with-instruction-bar");
+    document.querySelector(".instruction-bar").style.display = "flex";
+
+    let html = '<div class="step-content">';
+    if (step.image) {
+      html += `<img src="${step.image}" style="cursor: pointer;">`;
+    }
+    html += '</div>';
+    document.getElementById("content").innerHTML = html;
   }
-]
-,
-  // --- Topic 1: Building & Apartment Entry ---
-  [
-    {
-        title: "Step 1 – Building Entry",
-        text: "Scan the key card against the reader until you hear a beep. The glass door should open.",
-        action: () => {
-            document.getElementById("map").style.display = "none";
-            document.getElementById("content").style.display = "block";
-            document.querySelector(".instruction-bar").style.display = "flex";
 
-            document.getElementById("content").innerHTML = `
-            <div class="step-content">
-                <img src='cardReader.JPG'>
-            </div>
-            `;
-        }
-    },
-  {title:"Step 2 – Walk towards the Lift lobby", text:"Proceed to lift lobby. <br> You are on <b>LEVEL 25</b>, only use the lifts on the left with <b> High Rise Access </b> ", action:()=>{ document.getElementById("map").style.display="none"; document.getElementById("content").style.display="block"; document.getElementById("content").innerHTML = `
-      <div class="step-content">
-        <img src='lobby.gif'>
-      </div>
-    `; }},
-    {
-        title: "Step 3 – Enter the lift",
-        text: "Scan the key card on the reader and press level 25 ",
-        action: () => {
-            document.getElementById("map").style.display = "none";
-            document.getElementById("content").style.display = "block";
-            document.getElementById("content").innerHTML = `
-            <div class="step-content">
-                <img src='lift.JPG'>
-            </div>
-            `;
-        }
-    },
-    {
-        title: "Step 4 – Turn right after exiting the lift ",
-        text: "After exiting the lift, turn right into the corridor. <br> The apartment is located at the end of the corridor.",
-        action: () => {
-            document.getElementById("map").style.display = "none";
-            document.getElementById("content").style.display = "block";
-            document.getElementById("content").innerHTML = `
-            <div class="step-content">
-                <img src='level25.gif'>
-            </div>
-            `;
-        }
-    },
-    {
-        title: "Step 5: Welcome to your home away from home  ",
-    text: `
-      <strong>Door Opening Instructions:</strong><br>
-      1. Insert the <b>GREEN</b> key into the top keyhole.<br>
-      2. Turn the key clockwise and<br>
-      3. Pull down the door handle at the same time while pushing the door open.
-    `,        action: () => {
-            document.getElementById("map").style.display = "none";
-            document.getElementById("content").style.display = "block";
-            document.getElementById("content").innerHTML = `
-            <div class="step-content">
-                <img src='door.JPG'>
-            </div>
-            `;
-        }
-    }
-  ],
+  updateActiveTab();
+}
 
-  // --- Topic 2: Amenities Guide ---
-  [
-  {
-    title: "Step 1 – Amenities are located at level P1",
-    text: "Amenties such as the swimming pool, gym and sauna are located on Level P1 of the buiding.<br> Take the lift down to Level 'P1' <br> <b> Please remember to take your access card along with you </b>",
-    action: () => {
-      document.getElementById("map").style.display = "none";
-      document.getElementById("content").style.display = "block";
-      document.querySelector(".instruction-bar").style.display = "flex";
-
-      document.getElementById("content").innerHTML = `
-            <div class="step-content">
-                <img src='swimming.jpeg'>
-            </div>
-            `;
-    }
-  },{
-    title: "Step 2 – Turn right when exiting the lift",
-    text: "Turn right after exiting the lift. <br>You will see the entrance to the gym, sauna and swimming pool door",
-    action: () => {
-      document.getElementById("map").style.display = "none";
-      document.getElementById("content").style.display = "block";
-      document.getElementById("content").innerHTML = `
-            <div class="step-content">
-                <img src='levelp1.JPG'>
-            </div>
-            `;
-    }
-  },{
-    title: "Step 3 – Scan the keycard against the reader",
-    text: "Scan the keycard against the reader on the left. <br>Push the door open once you hear a beep. <br> <b>ENJOY!!! Please remember to keep your keycard in a safe place! </b>",
-    action: () => {
-      document.getElementById("map").style.display = "none";
-      document.getElementById("content").style.display = "block";
-      document.getElementById("content").innerHTML = `
-            <div class="step-content">
-                <img src='scanP1.JPG'>
-            </div>
-            `;
-    }
+function updateActiveTab() {
+  document.querySelectorAll(".app-tabs button").forEach(btn => btn.classList.remove("active"));
+  if (currentTopic === -1) {
+    const generalBtn = document.getElementById("tab-general");
+    if (generalBtn) generalBtn.classList.add("active");
+  } else {
+    const activeBtn = document.getElementById(`tab-${currentTopic}`);
+    if (activeBtn) activeBtn.classList.add("active");
   }
-    ],
+}
 
+function nextStep() {
+  const currentConfig = config.languages[currentLanguage];
+  const topic = currentConfig.topics[currentTopic];
+  if (currentStep < topic.steps.length - 1) {
+    currentStep++;
+    renderStep();
+  }
+}
 
-  // --- Topic 3: Return / Exiting ---
-  [
-  {
-    title: "Step 1 – Parking is located on 1 Douglass St",
-    text: "On Liverpool Street, turn left onto Douglass Street. <br> Please note this is a small alleyway and can be easily missed. Please also take extra care for oncoming vehicles and pedestrians.",
-    action: () => {
-      document.getElementById("map").style.display = "block";
-      document.getElementById("content").style.display = "none";
-      document.querySelector(".instruction-bar").style.display = "flex";
+function prevStep() {
+  if (currentStep > 0) {
+    currentStep--;
+    renderStep();
+  }
+}
 
-      // Remove all markers & routes
-      hideLockboxLayers();
-      showParkingLayers();
-      openPopupLower(liverpoolSt)
-
-      // Optional: reset map view for parking
-      map.flyTo([-33.87621216888041, 151.20499227269897],18);
+function goToTopic(topicId) {
+    console.log(topicId)
+  currentTopic = topicId;
+  currentStep = 0;
+  // Clear all markers when switching topics
+  Object.values(markerInstances).forEach(marker => {
+    if (map && map.hasLayer(marker)) {
+      map.removeLayer(marker);
     }
-    
-  },
-  {
-    title: "Step 2: Collect the keys from Eagar St",
-    text: "1) Eagar Street is on the right of Douglass St. <br> 2) Turn into Eagar Street and stop your car in a safe spot. ",
-    action: () => {
-      douglassStEntrance.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox <img src="douglasSt.png" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
-      map.flyTo([-33.87703364976371,151.20497041045243], 18);
-      openPopupLower(douglassStEntrance)
+  });
+  visibleMarkers = new Set();
 
-    }},
-    
-    {
-    title: "Step 3: Pick up the keys from Eagar Street",
-    text: "1) Head to the first window on Eagar Street and locate the lockbox marked '4H'.” <br>2) Unlock the lockbox to access the keys, keycards, and remote with the lockcode provided <br>3) Lock the lockbox by scrambling the numbers.",
-    action: () => {
-      lockboxParking.getPopup().setContent(`<div class="popup-scroll"><strong>Lockbox <img src="eagar4.JPG" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
-      map.flyTo([-33.87703364976371,151.20497041045243], 18);
-          openPopupLower(lockboxParking)
-
+  // Clear all routes when switching topics
+  Object.values(routeInstances).forEach(route => {
+    if (map && map.hasLayer(route)) {
+      map.removeLayer(route);
     }
-},
-{
-    title: "Step 4: Unlock the garage door",
-    text: "Unlock the garage door by pressing 1 on the remote.",
-    action: () => {
-      parkingMarker.getPopup().setContent(`<div class="popup-scroll">Unlock the garage gate with the remote<img src="remote.jpg" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
-      map.flyTo([-33.87703364976371,151.20497041045243], 18);
-          openPopupLower(parkingMarker)
-          
-    }}
-    ,
-    {
-    title: "Step 5: Enter the garage and turn left",
-    text: "1) Car space is located on <b>LEVEL 2</b>. <br> 2) Turn left after entering the gate and turn right UP the ramp <br> 3) Keep going up until you see level 2 <br> 4) The car space is on the left on Level 2, before the ramp goes up again. ",
-    action: () => {
-      parkingMarker.getPopup().setContent(`<div class="popup-scroll"> <img src="garageInstruction.gif" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
-      map.flyTo([-33.87703364976371,151.20497041045243], 18);
-          openPopupLower(parkingMarker)
+  });
+  visibleRoutes = new Set();
 
-    }},
-    {
-    title: "Step 6: Park in desginated car spot You are on LEVEL 2",
-    text: "Please park in the car space marked 325. This space can accommodate two cars; however, please use only one bay. <br>The lifts are located beside the car spaces. Please take only the lifts that go to Level 25.",
-    action: () => {
-      parkingMarker.getPopup().setContent(`<div class="popup-scroll"> <img src="carspot.JPG" style="width:300px;border-radius:8px;margin-top:8px;"></div>`)
-      map.flyTo([-33.87703364976371,151.20497041045243], 18);
-          openPopupLower(parkingMarker)
+  renderStep();
+}
 
-    }}
-]
-];
 function showGeneralInfo() {
-  currentTopic = 4; // update current topic for active tab highlighting
-  currentStep = 0;  // reset step index just in case
+  const currentConfig = config.languages[currentLanguage];
+  const { property } = currentConfig;
+  
+  currentTopic = -1; // Special topic ID
+  currentStep = 0;
   document.getElementById("map").style.display = "none";
   document.getElementById("content").style.display = "block";
+  document.getElementById("content").classList.remove("with-instruction-bar");
   document.querySelector(".instruction-bar").style.display = "none";
 
+  const rulesHtml = property.houseRules.map(rule => `<li>${rule}</li>`).join('');
+
   document.getElementById("content").innerHTML = `
-   <div class="step-content" style="padding:16px; max-width:600px; margin:auto;">
-  <h2>General Information</h2>
-
-  <p><strong>Building Address:</strong> Unit 325, Level 25, 569 George Street, Sydney NSW 2000</p>
-  <p><strong>Check-in Time:</strong> 3:00 PM onwards</p>
-  <p><strong>Check-out Time:</strong> 10:00 AM</p>
-  <p><strong>Wi-Fi Network:</strong> FourHaus_5G</p>
-  <p><strong>Wi-Fi Password:</strong> Stay@Fourhaus!</p>
-  <p><strong>Amenities:</strong> Located on Level P1</p>
-  <p><strong>Parking:</strong> Located on Level 2</p>
-
-  <h2>House Rules</h2>
-  <ul>
-    <li>This is a non-smoking apartment.</li>
-    <li>Please keep the access cards and remote safe and respect building rules.</li>
-    <li>Please keep the volume down after 10:00 PM.</li>
-    <li>A fee of <strong>$200</strong> will be charged for the replacement of each access card and remote.</li>
-  </ul>
-</div>  
+    <div class="step-content" style="padding:16px; max-width:600px; margin:auto;">
+      <h2>${currentConfig.generalInfo}</h2>
+      <p><strong>${currentConfig.buildingAddressLabel}:</strong> ${property.address}</p>
+      <p><strong>${currentConfig.checkInTimeLabel}:</strong> ${property.checkInTime}</p>
+      <p><strong>${currentConfig.checkOutTimeLabel}:</strong> ${property.checkOutTime}</p>
+      <p><strong>${currentConfig.wifiNetworkLabel}:</strong> ${property.wifi.network}</p>
+      <p><strong>${currentConfig.wifiPasswordLabel}:</strong> ${property.wifi.password}</p>
+      <p><strong>${currentConfig.amenitiesLabel}:</strong> ${property.amenities}</p>
+      <p><strong>${currentConfig.parkingLabel}:</strong> ${property.parking}</p>
+      <h2>${currentConfig.houseRulesLabel}</h2>
+      <ul>${rulesHtml}</ul>
+    </div>
   `;
 
   updateActiveTab();
 }
 
-// Current topic and step
-let currentTopic = 0;
-let currentStep = 0;
-
-function updateActiveTab() {
-  document.querySelectorAll(".app-tabs button").forEach(btn => {
-    btn.classList.remove("active");
-  });
-  const active = document.getElementById(`tab-${currentTopic}`);
-  if (active) active.classList.add("active");
-}
-function renderStep(){ 
-  allSteps[currentTopic][currentStep].action();
-  document.getElementById("stepText").innerHTML =
-    `<strong>${allSteps[currentTopic][currentStep].title}</strong><br>${allSteps[currentTopic][currentStep].text}`;
-  prevBtn.disabled = currentStep === 0;
-  nextBtn.disabled = currentStep === allSteps[currentTopic].length - 1;
-  updateActiveTab();
-}
-
-function nextStep(){ if(currentStep<allSteps[currentTopic].length-1){ currentStep++; renderStep(); }}
-function prevStep(){ if(currentStep>0){ currentStep--; renderStep(); }}
-function jumpToTopic(){ 
-  currentTopic=parseInt(document.getElementById("topicSelect").value); 
-  currentStep=0; 
-  renderStep();
-}
-function goToTopic(topicIndex) {
-  currentTopic = topicIndex;
-  currentStep = 0;
-  renderStep();
-}
-
-renderStep();
-// --- Image Modal Logic ---
+// Image modal logic
 const modal = document.getElementById("imgModal");
 const modalImg = document.getElementById("modalImg");
 const closeModal = document.querySelector("#imgModal .closeModal");
 
-// Close modal on clicking X or outside the image
 closeModal.onclick = () => { modal.style.display = "none"; };
-modal.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; };
+modal.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
 
 document.addEventListener("click", function (e) {
   const img = e.target.closest(".step-content img, .leaflet-popup-content img");
   if (!img) return;
-
-  modal.style.display = "flex";   // 🔥 FLEX, not block
+  modal.style.display = "flex";
   modalImg.src = img.src;
-
   document.body.style.overflow = "hidden";
 });
 
-</script>
+// Load config and start app
+loadConfig();
 
-  </body>
+        </script>
+    </body>
 </html>
