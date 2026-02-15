@@ -98,17 +98,6 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
   background: #ffffff;
   transition: all 0.2s;
 }
-.app-header {
-  position: relative;
-  z-index: 3000;
-  background: white;
-  padding: 10px 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  flex-shrink: 0;
-}
 
 .logo {
   height: 32px;
@@ -166,6 +155,72 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
   width: 400px;             /* default width */
   border-radius: 8px;
   margin-top: 16px;
+}
+
+.app-header {
+  position: relative;          /* for absolute children */
+  height: 60px;
+  background: white;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Centered logo */
+.logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 32px;
+  object-fit: contain;
+}
+
+.language-switcher {
+  position: absolute;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+
+#languageBtn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lang-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;  /* dropdown aligns to button right */
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 4px;
+  list-style: none;
+  padding: 4px 0;
+  display: none;
+  min-width: 100px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 3000;
+}
+
+.lang-dropdown li {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.lang-dropdown li:hover {
+  background: #2563eb;
+  color: white;
 }
 .app-bar {
   position: relative;
@@ -243,9 +298,14 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
         <div class="app-header">
             <img id="headerLogo" alt="Company Logo" class="logo">
             <div class="language-switcher">
-                <button class="lang-btn active" data-lang="en">English</button>
-                <button class="lang-btn" data-lang="zh">中文</button>
-                <button class="lang-btn" data-lang="kr">한국어</button>
+                <button id="languageBtn">
+                    🌐 <span id="currentLang">English</span> ▾
+                </button>
+                <ul id="languageDropdown" class="lang-dropdown">
+                    <li data-lang="en">English</li>
+                    <li data-lang="zh">中文</li>
+                    <li data-lang="kr">한국어</li>
+                </ul>
             </div>
         </div>
         <div id="imgModal">
@@ -272,7 +332,7 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
         <div id="content"></div>
 
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        
+
         <script>
 
 // Global config and state
@@ -321,14 +381,32 @@ function initApp() {
 }
 
 function setupLanguageSwitcher() {
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const lang = e.target.getAttribute('data-lang');
+  const btn = document.getElementById('languageBtn');
+  const dropdown = document.getElementById('languageDropdown');
+  const currentLangSpan = document.getElementById('currentLang');
+
+  // Show/hide dropdown on button click
+  btn.addEventListener('click', () => {
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  });
+
+  // Switch language when a dropdown item is clicked
+  dropdown.querySelectorAll('li').forEach(item => {
+    item.addEventListener('click', () => {
+      const lang = item.getAttribute('data-lang');
+      currentLangSpan.textContent = item.textContent;
+      dropdown.style.display = 'none';
       switchLanguage(lang);
     });
   });
-}
 
+  // Close dropdown if clicking outside
+  document.addEventListener('click', (e) => {
+    if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
+}
 function switchLanguage(lang) {
   if (lang === currentLanguage) return;
   
