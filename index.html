@@ -610,9 +610,7 @@ function hideMarkers(markerKeys) {
 
 function renderStep() {
   const currentConfig = config.languages[currentLanguage];
-  console.log(currentTopic)
   const topic = currentConfig.topics.find(t => t.id === currentTopic);
-  console.log(topic)
   const step = topic.steps[currentStep];
 
   // Update step text
@@ -723,7 +721,7 @@ function updateActiveTab() {
 
 function nextStep() {
   const currentConfig = config.languages[currentLanguage];
-  const topic = currentConfig.topics[currentTopic];
+  const topic = currentConfig.topics.find(t => t.id === currentTopic);
   if (currentStep < topic.steps.length - 1) {
     currentStep++;
     renderStep();
@@ -738,7 +736,6 @@ function prevStep() {
 }
 
 function goToTopic(topicId) {
-    console.log(topicId)
   currentTopic = topicId;
   currentStep = 0;
   // Clear all markers when switching topics
