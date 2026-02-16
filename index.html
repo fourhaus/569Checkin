@@ -9,7 +9,24 @@
             href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <style>
 body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-#map { height: 100%; width: 100vw; flex: 1; }
+#map { 
+  /* Use dynamic viewport height for mobile browsers */
+  height: 100dvh; 
+  width: 100vw; 
+  flex: 1; 
+  /* Add padding for controls on mobile */
+  padding-bottom: env(safe-area-inset-bottom, 60px);
+}
+@media (max-width: 600px) {
+  #map {
+    /* Extra bottom padding for mobile controls */
+        padding-bottom: 10px;
+  }
+  .leaflet-control {
+    /* Move controls up on mobile */
+    margin-bottom: 70px !important;
+  }
+}
 #content { display:none; padding:16px; height: 100%; overflow-y: auto; }
 #content.with-instruction-bar { padding-top:180px; }
 /* --- Dropdown Bar --- */
@@ -181,7 +198,6 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
   right: 16px;
   display: flex;
   align-items: center;
-  cursor: pointer;
 }
 
 
@@ -459,7 +475,18 @@ function initMap() {
   const [lat, lng] = config.mapCenter;
   map = L.map('map', { zoomControl: false }).setView([lat, lng], config.mapZoom);
   L.tileLayer(config.tiles, { subdomains: 'abcd', maxZoom: 20 }).addTo(map);
-  L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+  // Move controls up on mobile
+  let zoomPosition = 'bottomright';
+  if (window.innerWidth < 600) {
+    zoomPosition = 'bottomright';
+    setTimeout(() => {
+      document.querySelectorAll('.leaflet-control').forEach(ctrl => {
+        ctrl.style.marginBottom = '120px'; // Set your desired margin here
+      });
+    }, 500);
+  }
+  L.control.zoom({ position: zoomPosition }).addTo(map);
 
   // Create all markers from config
   Object.entries(config.markers).forEach(([key, markerData]) => {
