@@ -27,7 +27,12 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
     margin-bottom: 70px !important;
   }
 }
-#content { display:none; padding:16px; height: 100%; overflow-y: auto; }
+#content { 
+  display:none; 
+  padding:16px; 
+  height: 100dvh;   /* Ensure it fills viewport for scrolling */
+  overflow-y: auto; 
+}
 #content.with-instruction-bar { padding-top:180px; }
 /* --- Dropdown Bar --- */
 /* --- Image Modal --- */
@@ -303,6 +308,13 @@ body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans
 .step-text strong { display:block; font-size:15px;}
 .topic-dropdown { position:sticky; top:0; background:white; padding:8px 16px; z-index:2000; box-shadow:0 2px 6px rgba(0,0,0,0.15);}
 .topic-dropdown select { padding:6px 10px; font-size:14px; border-radius:6px; border:1px solid #ccc;}
+#content:not(.with-instruction-bar) .step-content {
+  display: block;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  /* Remove flex centering for general info */
+}
     </style>
     </head>
     <body>
@@ -762,7 +774,7 @@ function showGeneralInfo() {
   const rulesHtml = property.houseRules.map(rule => `<li>${rule}</li>`).join('');
 
   document.getElementById("content").innerHTML = `
-    <div class="step-content" style="padding:16px; max-width:600px; margin:auto;">
+    <div class="step-content" style="padding:16px; max-width:600px;">
       <h2>${currentConfig.generalInfo}</h2>
       <p><strong>${currentConfig.buildingAddressLabel}:</strong> ${property.address}</p>
       <p><strong>${currentConfig.checkInTimeLabel}:</strong> ${property.checkInTime}</p>
@@ -784,8 +796,16 @@ const modal = document.getElementById("imgModal");
 const modalImg = document.getElementById("modalImg");
 const closeModal = document.querySelector("#imgModal .closeModal");
 
-closeModal.onclick = () => { modal.style.display = "none"; };
-modal.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+closeModal.onclick = () => { 
+  modal.style.display = "none"; 
+  document.body.style.overflow = ""; // Restore scrolling when modal closes
+};
+modal.onclick = (e) => { 
+  if (e.target === modal) {
+    modal.style.display = "none"; 
+    document.body.style.overflow = ""; // Restore scrolling when modal closes
+  }
+};
 
 document.addEventListener("click", function (e) {
   const img = e.target.closest(".step-content img, .leaflet-popup-content img");
