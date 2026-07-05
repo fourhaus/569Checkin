@@ -112,18 +112,25 @@
                             "image": "remote.jpg"
                         },
                         {
+                            "title": "Step 4: Enter the garage and turn left",
+                            "text": "Stop at the Yellow box and Press 1 on the remote to open the boom gate.",
+                            "marker": "parkingMarker",
+                            "route": "parkingRoute2",
+                            "image": "parkingEntranceNew.JPG"
+                        },
+                        {
                             "title": "Step 5: Enter the garage and turn left",
-                            "text": "1) Car space is located on <b>LEVEL 2</b>. <br> 2) Turn left after entering the gate and turn right UP the ramp <br> 3) Keep going up until you see level 2 <br> 4) The car space is on the left on Level 2, before the ramp goes up again.",
+                            "text": "1) Car space is located on <b>LEVEL 2</b>. <br> 2) Turn right UP the ramp <br> 3) Keep going up until you see level 2 <br> 4) The car space is on the left on Level 2, before the ramp goes up again. ",
                             "marker": "parkingMarker",
                             "route": "parkingRoute2",
                             "image": "garageInstruction.gif"
                         },
                         {
                             "title": "Step 6: Park in designated car spot",
-                            "text": "Please park in the car space marked 325. This space can accommodate two cars; however, please use only one bay. <br>The lifts are located beside the car spaces. Please take only the lifts that go to Level 25.",
+                            "text": "Please park only in car space 325, which is the space on the right marked \"B\" in the image. <br><b>Please park within the marked lines. </b> <br><br>The lifts are located beside the car spaces. Please take only the lifts that go to <b>Level 25.</b>",
                             "marker": "parkingMarker",
                             "route": "parkingRoute2",
-                            "image": "carspot.JPG"
+                            "image": "7.PNG"
                         }
                     ]
                 },
